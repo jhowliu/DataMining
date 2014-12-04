@@ -3,4 +3,5 @@
 
 using namespace std;
 
-vector<string> IConcat(vector<string> p, string candidate);
+vector<vector<string> > *IConcat(vector<vector<string> > *p, string candidate);
+vector<vector<string> > *SConcat(vector<vector<string> > *p, string candidate);
