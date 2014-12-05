@@ -10,19 +10,21 @@ vector<vector<string> > *SConcat(vector<vector<string> > *p, string candidate) {
 
     return p;
 }
+
 // I-Concatenation in the same itemset.
 vector<vector<string> > *IConcat(vector<vector<string> > *p, string candidate) {
     vector<string> *tmp = &(p->back());
+
     tmp->push_back(candidate);
 
     return p;
 }
 
+// Testing code
 int main(int argc, char** argv) {
     vector<vector<string> > b;
     vector<string> a;
 
-    /* Testing code */
     a.push_back("Yoo");
     b.push_back(a);
     IConcat(&b, "Noo");
