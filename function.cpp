@@ -13,7 +13,7 @@ int main(){
 
 
 void width_pruning(vector<vector<int> > pattern, vector<int> utility, vector<int> &ilist, vector<int> &slist){
-    for ()
+    //for ()
 }
 
 bool depth_pruning(vector<vector<int> > pattern, vector<int> utility){
@@ -43,7 +43,7 @@ void USpan(vector<vector<int> > pattern, vector<int> utility){
 
     vector<int> ilist, slist;
     candidate_generate(pattern, utility, ilist, slist);
-    width_prunig(pattern, utility, ilist, slist);
+    width_pruning(pattern, utility, ilist, slist);
     
     // Other work(Jhow)
 }
