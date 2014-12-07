@@ -1,9 +1,10 @@
 #include "concate.h"
 #include <iostream>
+#include <stdio.h>
 
 // S-Concatenation in the different itemsets.
-vector<vector<string> > *SConcat(vector<vector<string> > *p, string candidate) {
-    vector<string> tmp;
+vector<vector<int> > *SConcat(vector<vector<int> > *p, int candidate) {
+    vector<int> tmp;
 
     tmp.push_back(candidate);
     p->push_back(tmp);
@@ -12,8 +13,8 @@ vector<vector<string> > *SConcat(vector<vector<string> > *p, string candidate) {
 }
 
 // I-Concatenation in the same itemset.
-vector<vector<string> > *IConcat(vector<vector<string> > *p, string candidate) {
-    vector<string> *tmp = &(p->back());
+vector<vector<int> > *IConcat(vector<vector<int> > *p, int candidate) {
+    vector<int> *tmp = &(p->back());
 
     tmp->push_back(candidate);
 
@@ -22,22 +23,27 @@ vector<vector<string> > *IConcat(vector<vector<string> > *p, string candidate) {
 
 // Testing code
 int main(int argc, char** argv) {
-    vector<vector<string> > b;
-    vector<string> a;
+    vector<vector<int> > b;
+    vector<int> a;
 
-    a.push_back("Yoo");
+    a.push_back(123);
     b.push_back(a);
-    IConcat(&b, "Noo");
-    IConcat(&b, "HaHa");
-    SConcat(&b, "Hello");
-    SConcat(&b, "World");
+    IConcat(&b, 789);
+    SConcat(&b, 999);
+    IConcat(&b, 456);
+    IConcat(&b, 789);
+    SConcat(&b, 999);
+    SConcat(&b, 100);
 
-    for (vector<vector<string> >::iterator v_iter = b.begin(); v_iter != b.end(); v_iter++) 
+    char buf[64];
+    for (vector<vector<int> >::iterator v_iter = b.begin(); v_iter != b.end(); v_iter++) 
     {
-        for (vector<string>::iterator iter = v_iter->begin(); iter != v_iter->end(); iter++) 
+        for (vector<int>::iterator iter = v_iter->begin(); iter != v_iter->end(); iter++) 
         {
-            cout << *iter + " ";
+            sprintf(buf, "%d ", *iter);
+            cout << buf;
         }
+        buf[0] = 0;
         cout << endl;
     }
 

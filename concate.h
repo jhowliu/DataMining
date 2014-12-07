@@ -1,7 +1,6 @@
 #include <vector>
-#include <string>
 
 using namespace std;
 
-vector<vector<string> > *IConcat(vector<vector<string> > *p, string candidate);
-vector<vector<string> > *SConcat(vector<vector<string> > *p, string candidate);
+vector<vector<int> > *IConcat(vector<vector<int> > *p, int candidate);
+vector<vector<int> > *SConcat(vector<vector<int> > *p, int candidate);
