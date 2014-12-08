@@ -11,6 +11,61 @@ int main(){
     return 0;
 }
 
+int matched(vector<int> items, map<int, vector<Entry> > matrix, int prev_matched){
+    int matched_index = -1;
+    bool exist = true;
+    vector<Entry> entries;
+
+    // Check if all the item is exist in the map
+    for (int i = 0; i < items.size(); i++){
+        if (matrix.count(items[i]) == 0){
+            exist = false;
+            break;
+        }
+    }
+
+    if (exist == true){
+        // The length of all the entries in the matrix is equal
+        int len = matrix[items[0]].size();
+        // Find the index which all items's self utility > 0
+        for (int i = prev_matched+1; i < len; i++){
+            for (int j = 0; j < items.size(); j++){
+                entries = matrix[items[j]];
+                if (entries[i].self == 0) break;
+            }
+            
+            // All the items's self utility > 0
+            if (j == items.size()){
+                matched_index = i;
+                break;
+            }
+        }
+    }
+
+    return matched_index;
+}
+
+void find_matched_items(vector<vector<int> > pattern, vector<vector<int> > &items_positions){
+    // Find each matrix matched positions
+    for (int i = 0; i < matrices.size(); i++){
+        // Index of matched itemset
+        int matched_itemset = -1;
+        vector<int> temp;
+        // Match step by step(itemset)
+        for (int j = 0; j < pattern.size(); j++){
+            matched_itemset = matched(pattern[j], matrices[i], matched_itemset);
+            if (matched_itemset == -1) break;
+        }
+        
+        // Pivot exist, find the remain matched item's position
+        while (matched_itemset != -1){
+            temp.push(matched_itemset);
+            matched_itemset = matched(pattern[j-1], matrices[i], matched_itemset);
+        }
+
+        items_positions.psuh(temp);
+    }
+}
 
 void width_pruning(vector<vector<int> > pattern, vector<int> utility, vector<int> &ilist, vector<int> &slist){
     //for ()
