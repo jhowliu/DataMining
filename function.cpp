@@ -83,10 +83,14 @@ void width_pruning(vector<vector<int> > pattern, vector<int> &ilist, vector<int>
         int swu = 0;
         int item = ilist[i];
         for (int j = 0; j < matrices.size(); j++){
-            if (items_positions[j].size() > 0){
-                int pivot_i = items_positions[j][0];
-                // Check the concat item if valid
-                if (matrices[j].count(item) > 0 && matrices[j][item][pivot_i].self > 0) swu += total_utilities[j];
+            // Check the concat item if valid in the matrix
+            if (matrices[j].count(item) == 0) continue;
+            for (int k = 0; k < items_positions[j].size(); k++){
+                int col = items_positions[j][k];
+                if (matrices[j][item][col].self > 0){
+                    swu += total_utilities[j];
+                    break;
+                }
             }
         }
 
