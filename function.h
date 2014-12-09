@@ -10,12 +10,16 @@ typedef struct {
 
 using namespace std;
 
+// Tool 
+void ConcatenationFunc(vector<int> list);
+void PrintPattern(vector<vector<int> > p);
+
 // Concatenation
-vector<vector<int> > *IConcat(vector<vector<int> > *p, int candidate);
-vector<vector<int> > *SConcat(vector<vector<int> > *p, int candidate);
+vector<vector<int> > IConcat(vector<vector<int> > *p, int candidate);
+vector<vector<int> > SConcat(vector<vector<int> > *p, int candidate);
 
 // Utility calculation with candidates.
-vector<vector<int> > cal_utility(vector<vector<int> > pattern, vector<vector<int> > pattern_index, vector<vector<int> > max_utility);
+vector<int> cal_utility(map<int, vector<Entry> > matrix, int pattern, vector<int> pattern_index, vector<int> utility, int *max_utility);
 
 int matched(vector<int> items, map<int, vector<Entry> > matrix, int prev_matched);
 
