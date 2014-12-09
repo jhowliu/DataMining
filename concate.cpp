@@ -1,4 +1,5 @@
 #include "concate.h"
+#include "function.h"
 #include <iostream>
 #include <stdio.h>
 

@@ -1,7 +1,7 @@
 #include <vector>
 
 // Matrix Entry tuple(self, remaining utility)
-typedef struct{
+typedef struct {
     int self;
     int remain;
 } Entry;
