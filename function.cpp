@@ -7,6 +7,9 @@ int threshold;
 // List of mapper matrix
 vector<map<int, vector<Entry> > > matrices;
 
+// Total utility of each
+vector<int> total_utilities;
+
 int main(){
     return 0;
 }
@@ -60,7 +63,7 @@ vector<vector<int> > find_matched_items(vector<vector<int> > pattern){
         
         // Pivot exist, find the remain matched item's position
         while (matched_itemset != -1){
-            temp.push(matched_itemset);
+            temp.push_back(matched_itemset);
             matched_itemset = matched(pattern[j-1], matrices[i], matched_itemset);
         }
 
@@ -70,8 +73,40 @@ vector<vector<int> > find_matched_items(vector<vector<int> > pattern){
     return items_positions;
 }
 
-void width_pruning(vector<vector<int> > pattern, vector<int> utility, vector<int> &ilist, vector<int> &slist){
-    //for ()
+void width_pruning(vector<vector<int> > pattern, vector<int> &ilist, vector<int> &slist, vector<vector<int> > items_positions){
+    // Pruning ilist 
+    for (int i = ilist.size()-1; i >= 0; i--){
+        int swu = 0;
+        int item = ilist[i];
+        for (int j = 0; j < matrice.size(); j++){
+            if (items_positions[j].size() > 0){
+                int pivot_i = items_positions[j][0];
+                // Check the concat item if valid
+                if (matrice[j].count(item) > 0 && matrice[j][item][pivot_i].self > 0) swu += total_utilities[j];
+            }
+        }
+
+        // Pruning the unquilified item
+        if (swu < threshold) ilist.erase(ilist.begin()+i);
+    }
+
+    // Pruning slist 
+    for (int i = slist.size()-1; i >= 0; i--){
+        int swu = 0;
+        vector<int> items;
+        items.push_back(slist[i]);
+        for (int j = 0; j < matrice.size(); j++){
+            if (items_positions[j].size() > 0){
+                int pivot_i = items_positions[j][0];
+                
+                // Check the concat item if valid
+                if (matched(items, matrice[j], pivot_i) == -1) swu += total_utilities[j];
+            }
+        }
+
+        // Pruning the unquilified item
+        if (swu < threshold) slist.erase(slist.begin()+i);
+    }
 }
 
 bool depth_pruning(vector<vector<int> > pattern, vector<int> utility,  vector<vector<int> > items_positions){
@@ -104,7 +139,7 @@ void USpan(vector<vector<int> > pattern, vector<int> utility){
 
     vector<int> ilist, slist;
     candidate_generate(pattern, utility, ilist, slist);
-    width_pruning(pattern, utility, ilist, slist);
+    width_pruning(pattern, items_positions, ilist, slist);
     
     // Other work(Jhow)
 }
