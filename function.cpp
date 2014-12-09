@@ -10,6 +10,9 @@ vector<map<int, vector<Entry> > > matrices;
 // Total utility of each
 vector<int> total_utilities;
 
+// Sorted sequence
+vector<vector<int> > sequences;
+
 int main(){
     return 0;
 }
@@ -129,7 +132,36 @@ bool depth_pruning(vector<vector<int> > pattern, vector<int> utility,  vector<ve
     return sigma >= threshold
 }
 
-void candidate_generate(vector<vector<int> > pattern, vector<int> utility, vector<int> &ilist, vector<int> &slist);
+void candidate_generate(vector<vector<int> > pattern, vector<int> &ilist, vector<int> &slist, vector<vector<int> > items_positions){
+    int last_item = pattern[pattern.size()-1];
+    
+    set<int> iset, sset;
+    for (int i = 0; i < matrices.size(); i++){
+        // Check pivot exist
+        if (items_positions[i].size() > 0){
+            // Item index in the sequence
+            int last_item_index; 
+            for (int j = 0; j < sequences[i].size(); j++){
+                if (sequences[i][j] == last_item){
+                    last_item_index = j;
+                    break;
+                }
+            }
+
+            // Add the remain item to iset
+            for (int j = last_item_index+1; j < sequences[i].size(); j++) iset.insert(sequences[i][j]);
+            
+            // If the pivot index not the last itemset, then s concat all the item in the sequence
+            if (items_positions[i][0] < matrice[i].size()-1){
+                for (int j = 0; j < sequences[i].size(); j++) sset.insert(sequences[i][j]);
+            }
+        }
+    }
+
+    // Convert set to list
+    for (set<int>::iterator it = iset.begin(); it != iset.end(); ++it) ilist.push_back(*it);
+    for (set<int>::iterator it = sset.begin(); it != sset.end(); ++it) ilist.push_back(*it);
+}
 
 void USpan(vector<vector<int> > pattern, vector<int> utility){
     vector<vector<int> > items_positions = find_matched_items(pattern);
