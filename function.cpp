@@ -45,7 +45,8 @@ int matched(vector<int> items, map<int, vector<Entry> > matrix, int prev_matched
     return matched_index;
 }
 
-void find_matched_items(vector<vector<int> > pattern, vector<vector<int> > &items_positions){
+vector<vector<int> > find_matched_items(vector<vector<int> > pattern){
+    vector<vector<int> > items_positions;
     // Find each matrix matched positions
     for (int i = 0; i < matrices.size(); i++){
         // Index of matched itemset
@@ -65,13 +66,15 @@ void find_matched_items(vector<vector<int> > pattern, vector<vector<int> > &item
 
         items_positions.psuh(temp);
     }
+    
+    return items_positions;
 }
 
 void width_pruning(vector<vector<int> > pattern, vector<int> utility, vector<int> &ilist, vector<int> &slist){
     //for ()
 }
 
-bool depth_pruning(vector<vector<int> > pattern, vector<int> utility){
+bool depth_pruning(vector<vector<int> > pattern, vector<int> utility,  vector<vector<int> > items_positions){
     int sigma = 0;
     int a = pattern.size()-1;
     int b = pattern[a].size()-1;
@@ -81,9 +84,10 @@ bool depth_pruning(vector<vector<int> > pattern, vector<int> utility){
     for (int i = 0; i < utility.size(); i++) sigma += utility[i];
     // Remain utility
     for (int i = 0; i < matrices.size(); i++){
-        if (matrices[i].find(lastPattern) != -1){
-            // Find pivot j
-            sigma += matrices[i][lastPattern][j].remain;
+        // Check the pattern matched at least once in the transaction matrix
+        if (items_positions[i].size() > 0){
+            int pivot_i = items_positions[i][0];
+            sigma += matrices[i][lastPattern][pivot_i].remain;
         }
     }
 
@@ -93,8 +97,10 @@ bool depth_pruning(vector<vector<int> > pattern, vector<int> utility){
 void candidate_generate(vector<vector<int> > pattern, vector<int> utility, vector<int> &ilist, vector<int> &slist);
 
 void USpan(vector<vector<int> > pattern, vector<int> utility){
+    vector<vector<int> > items_positions = find_matched_items(pattern);
+    
     // If not pass the depth pruning then return(arrive the leaf node)
-    if (depth_pruning(pattern, utility) != true) return;
+    if (depth_pruning(pattern, utility, items_positions) != true) return;
 
     vector<int> ilist, slist;
     candidate_generate(pattern, utility, ilist, slist);
