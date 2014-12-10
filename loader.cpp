@@ -1,4 +1,4 @@
-#include "function.h"
+#include "loader.h"
 #include <fstream>
 #include <iostream>
 
@@ -41,9 +41,8 @@ vector<map<int, vector<Entry> > > reader(string fileName) {
         char tmp[100];
         // Split header
         strcpy(tmp, iter->c_str());
-        int row = strtok(tmp, ",")[0] - '0'; 
-        int col = strtok(NULL, ",")[0] - '0';
-        cout << row << ", " << col << endl;
+        int col = strtok(tmp, ",")[0] - '0'; 
+        int row = strtok(NULL, ",")[0] - '0';
         tmp[0] = 0;
         iter++;
 
@@ -55,7 +54,7 @@ vector<map<int, vector<Entry> > > reader(string fileName) {
         token = strtok(tmp, ",");
 
         while (token!= NULL) {
-            p.push_back(atoi(token));
+            p.push_back(token[0] - '0');
             token = strtok(NULL, ",");
         }
 
@@ -81,8 +80,24 @@ vector<map<int, vector<Entry> > > reader(string fileName) {
         }
         matrix.push_back(emap);
     }
-    
+
+    PrintMatrix(matrix, plist);
+
     return matrix;
+}
+
+void PrintMatrix(vector<map<int, vector<Entry> > > matrix, vector<vector<int> > plist) {
+    for (int i = 0; i != matrix.size(); i++) 
+    {
+        for (int j = 0; j != plist[i].size(); j++) 
+        {
+            cout << (char)('0' + plist[i][j]) << " ";
+            for (vector<Entry>::iterator iter = matrix[i][plist[i][j]].begin(); iter != matrix[i][plist[i][j]].end(); iter++) 
+                cout << "(" << iter->self << "," << iter->remain << ") ";
+            cout << endl;
+        }
+        cout << endl;
+    }
 }
 
 int main(int argc, char **argv) {
