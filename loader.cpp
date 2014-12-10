@@ -41,8 +41,8 @@ vector<map<int, vector<Entry> > > reader(string fileName) {
         char tmp[100];
         // Split header
         strcpy(tmp, iter->c_str());
-        int col = strtok(tmp, ",")[0] - '0'; 
-        int row = strtok(NULL, ",")[0] - '0';
+        int col = atoi(strtok(tmp, ",")); 
+        int row = atoi(strtok(NULL, ","));
         tmp[0] = 0;
         iter++;
 
