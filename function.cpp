@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <iostream> #include <stdio.h>
 #include <map>
 
 #include "function.h"
@@ -21,10 +21,11 @@ int main(){
 vector<int> cal_utility(map<int, vector<Entry> > matrix, int pattern, vector<int> pattern_index, vector<int> utility, int *max_utility) {
     vector<int> utilities;
     int max = 0;
+    int index = 0;
     
     for (vector<int>::iterator iter = pattern_index.begin(); iter != pattern_index.end(); iter++) 
     {
-        int tmp = utility[i] + matrix[pattern][*iter].self;
+        int tmp = utility[index++] + matrix[pattern][*iter].self;
         utilities.push_back(tmp);
         if (tmp > max) 
             max = tmp;
@@ -42,12 +43,12 @@ vector<vector<int> > SConcat(vector<vector<int> > p, int candidate) {
     tmp.push_back(candidate);
     p.push_back(tmp);
 
-    return p
+    return p;
 }
 
 // I-Concatenation in the same itemset.
 vector<vector<int> > IConcat(vector<vector<int> > p, int candidate) {
-    vector<int> *tmp = &(p->back());
+    vector<int> *tmp = &(p.back());
     
     tmp->push_back(candidate);
 
@@ -218,12 +219,12 @@ void USpan(vector<vector<int> > pattern, vector<int> utility){
     width_pruning(pattern, ilist, slist, items_positions);
     
     // I-Concatenation
-    ConcatenationFunc(ilist);
+    ConcatenationFunc(pattern, utility, ilist);
     // S-Concatenation
-    ConcatenationFunc(slist);
+    ConcatenationFunc(pattern, utility, slist);
 }
 
-void ConcatenationFunc(vector<int> list) {
+void ConcatenationFunc(vector<vector<int> > pattern, vector<int> utility, vector<int> list) {
     for (int i = 0; i != list.size(); i++) {
         vector<vector<int> > new_pattern = IConcat(pattern, list[i]);
 
@@ -233,7 +234,7 @@ void ConcatenationFunc(vector<int> list) {
         // Calculate utilities of the new pattern.
         for (int idx = 0; idx != matrices.size(); idx++) {
             int max_utility = 0;
-            vector<int> tmp_utility = cal_utility(matrices[idx], new_pattern, matched_index[idx], utility, &max_utility);
+            vector<int> tmp_utility = cal_utility(matrices[idx], list[i], matched_index[idx], utility, &max_utility);
 
             // Output the new pattern if its maximum utility is larger than threshold.
             if (max_utility > threshold) PrintPattern(new_pattern);

@@ -11,7 +11,7 @@ typedef struct {
 using namespace std;
 
 // Tool 
-void ConcatenationFunc(vector<int> list);
+void ConcatenationFunc(vector<vector<int> > pattern, vector<int> utility, vector<int> list);
 void PrintPattern(vector<vector<int> > p);
 
 // Concatenation
