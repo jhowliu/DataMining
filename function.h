@@ -3,12 +3,23 @@
 #include <map>
 
 // Matrix Entry tuple(self, remaining utility)
-typedef struct{
+typedef struct {
     int self;
     int remain;
 } Entry;
 
 using namespace std;
+
+// Tool 
+void ConcatenationFunc(vector<vector<int> > pattern, vector<int> utility, vector<int> list);
+void PrintPattern(vector<vector<int> > p);
+
+// Concatenation
+vector<vector<int> > IConcat(vector<vector<int> > *p, int candidate);
+vector<vector<int> > SConcat(vector<vector<int> > *p, int candidate);
+
+// Utility calculation with candidates.
+vector<int> cal_utility(map<int, vector<Entry> > matrix, int pattern, vector<int> pattern_index, vector<int> utility, int *max_utility);
 
 int matched(vector<int> items, map<int, vector<Entry> > matrix, int prev_matched);
 

@@ -1,3 +1,4 @@
+#include <iostream> 
 #include <stdio.h>
 #include <map>
 
@@ -15,6 +16,44 @@ vector<vector<int> > sequences;
 
 int main(){
     return 0;
+}
+
+// Calculate the utility of current pattern after concating the new pattern.
+vector<int> cal_utility(map<int, vector<Entry> > matrix, int pattern, vector<int> pattern_index, vector<int> utility, int *max_utility) {
+    vector<int> utilities;
+    int max = 0;
+    int index = 0;
+    
+    for (vector<int>::iterator iter = pattern_index.begin(); iter != pattern_index.end(); iter++) 
+    {
+        int tmp = utility[index++] + matrix[pattern][*iter].self;
+        utilities.push_back(tmp);
+        if (tmp > max) 
+            max = tmp;
+    }
+
+    *max_utility = max;
+
+    return utilities;
+}
+
+// S-Concatenation in the different itemsets.
+vector<vector<int> > SConcat(vector<vector<int> > p, int candidate) {
+    vector<int> tmp;
+
+    tmp.push_back(candidate);
+    p.push_back(tmp);
+
+    return p;
+}
+
+// I-Concatenation in the same itemset.
+vector<vector<int> > IConcat(vector<vector<int> > p, int candidate) {
+    vector<int> *tmp = &(p.back());
+    
+    tmp->push_back(candidate);
+
+    return p;
 }
 
 int matched(vector<int> items, map<int, vector<Entry> > matrix, int prev_matched){
@@ -46,8 +85,8 @@ int matched(vector<int> items, map<int, vector<Entry> > matrix, int prev_matched
                 break;
             }
         }
-    }
-
+    } 
+    
     return matched_index;
 }
 
@@ -55,18 +94,18 @@ vector<vector<int> > find_matched_items(vector<vector<int> > pattern){
     int j;
     vector<vector<int> > items_positions;
     // Find each matrix matched positions
-    for (int i = 0; i < matrices.size(); i++){
+    for (int i = 0; i < matrices.size(); i++) { // Iterate matrix
         // Index of matched itemset
         int matched_itemset = -1;
         vector<int> temp;
         // Match step by step(itemset)
-        for (j = 0; j < pattern.size(); j++){
+        for (j = 0; j < pattern.size(); j++) {
             matched_itemset = matched(pattern[j], matrices[i], matched_itemset);
             if (matched_itemset == -1) break;
         }
         
         // Pivot exist, find the remain matched item's position
-        while (matched_itemset != -1){
+        while (matched_itemset != -1) {
             temp.push_back(matched_itemset);
             matched_itemset = matched(pattern[j-1], matrices[i], matched_itemset);
         }
@@ -79,7 +118,7 @@ vector<vector<int> > find_matched_items(vector<vector<int> > pattern){
 
 void width_pruning(vector<vector<int> > pattern, vector<int> &ilist, vector<int> &slist, vector<vector<int> > items_positions){
     // Pruning ilist 
-    for (int i = ilist.size()-1; i >= 0; i--){
+    for (int i = ilist.size()-1; i >= 0; i--) {
         int swu = 0;
         int item = ilist[i];
         for (int j = 0; j < matrices.size(); j++){
@@ -180,5 +219,45 @@ void USpan(vector<vector<int> > pattern, vector<int> utility){
     candidate_generate(pattern, ilist, slist, items_positions);
     width_pruning(pattern, ilist, slist, items_positions);
     
-    // Other work(Jhow)
+    // I-Concatenation
+    ConcatenationFunc(pattern, utility, ilist);
+    // S-Concatenation
+    ConcatenationFunc(pattern, utility, slist);
+}
+
+void ConcatenationFunc(vector<vector<int> > pattern, vector<int> utility, vector<int> list) {
+    for (int i = 0; i != list.size(); i++) {
+        vector<vector<int> > new_pattern = IConcat(pattern, list[i]);
+
+        // Find matched position of the new pattern.
+        vector<vector<int> > matched_index = find_matched_items(new_pattern);
+
+        // Calculate utilities of the new pattern.
+        for (int idx = 0; idx != matrices.size(); idx++) {
+            int max_utility = 0;
+            vector<int> tmp_utility = cal_utility(matrices[idx], list[i], matched_index[idx], utility, &max_utility);
+
+            // Output the new pattern if its maximum utility is larger than threshold.
+            if (max_utility > threshold) PrintPattern(new_pattern);
+
+            USpan(new_pattern, tmp_utility);
+        }
+    }
+}
+
+void PrintPattern(vector<vector<int> > p) {
+    char buf[20];
+    for (int i = 0; i != p.size(); i++) 
+    {
+        cout << "(";
+        for (int j = 0; j != p[i].size(); j++) 
+        {
+            sprintf(buf, "%d", p[i][j]); 
+            cout << buf;
+            if (j != p[i].size()-1) cout << ",";
+            buf[0] = 0;
+        }
+        cout << ")";
+    }
+    cout << endl;
 }
