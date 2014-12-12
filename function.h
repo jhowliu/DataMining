@@ -4,6 +4,12 @@
 
 #define SIZE 2048
 
+// Utility entry
+typedef struct{
+    int index;
+    int utility;
+}UT_E;
+
 // Matrix Entry tuple(self, remaining utility)
 typedef struct {
     int self;
