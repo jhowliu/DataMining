@@ -257,20 +257,16 @@ void width_pruning(vector<vector<int> > pattern, vector<int> &ilist, vector<int>
     }
 }
 
-bool depth_pruning(vector<vector<int> > pattern, vector<int> utility,  vector<vector<int> > items_positions){
+bool depth_pruning(int last_item, vector<vector<UT_E> > list_of_utilities){
     int sigma = 0;
-    int a = pattern.size()-1;
-    int b = pattern[a].size()-1;
-    int lastPattern = pattern[a][b];
-
-    // Self utility
-    for (int i = 0; i < utility.size(); i++) sigma += utility[i];
-    // Remain utility
     for (int i = 0; i < matrices.size(); i++){
-        // Check the pattern matched at least once in the transaction matrix
-        if (items_positions[i].size() > 0){
-            int pivot_i = items_positions[i][0];
-            sigma += matrices[i][lastPattern][pivot_i].remain;
+        vector<UT_E> utilities = list_of_utilities[i];
+
+        // Exist at least one end item
+        if (utilities.size() != 0){
+            int col = utilities[0].index;
+            // Rest utility + Current pattern utility(pivot)
+            sigma = matrices[i][last_item][col].remain + utilities[0].utility;
         }
     }
 
