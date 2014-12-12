@@ -6,7 +6,6 @@ int main(int argc, char **argv){
     matrices = reader(argv[1], sequences);
 
     set_args(matrices, sequences); 
-    test();
     //reader(argv[1], sequences);
     return 0;
 }
