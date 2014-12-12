@@ -275,10 +275,10 @@ bool depth_pruning(int last_item, vector<vector<UT_E> > list_of_utilities){
 
 // Find the item index in the given sequence, if not find return -1
 int find_row_index(int last_item, vector<int> sequence){
-    int item_row = -1
+    int item_row = -1;
     for (int i = 0; i < sequence.size(); i++){
         if (sequence[i] == last_item){
-            item_row = j;
+            item_row = i;
             break;
         }
     }
