@@ -2,6 +2,14 @@
 #include <set>
 #include <map>
 
+#define SIZE 2048
+
+// Utility entry
+typedef struct{
+    int index;
+    int utility;
+}UT_E;
+
 // Matrix Entry tuple(self, remaining utility)
 typedef struct {
     int self;
@@ -9,6 +17,13 @@ typedef struct {
 } Entry;
 
 using namespace std;
+
+void set_args(vector<map<int, vector<Entry> > > mx, vector<vector<int> > seq);
+void test();
+
+// Loader
+void PrintMatrix(vector<map<int, vector<Entry> > > matrix, vector<vector<int> > sequences);
+vector<map<int, vector<Entry> > > reader(char *fileName, vector<vector<int> > &sequences);
 
 // Tool 
 void ConcatenationFunc(vector<vector<int> > pattern, vector<int> utility, vector<int> list);
