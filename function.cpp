@@ -157,7 +157,7 @@ vector<vector<int> > IConcat(vector<vector<int> > p, int candidate) {
     return p;
 }
 
-int matched(vector<int> items, map<int, vector<Entry> > matrix, int prev_matched){
+int match(vector<int> items, map<int, vector<Entry> > matrix, int prev_matched){
     int matched_index = -1;
     bool exist = true;
     vector<Entry> entries;
@@ -191,7 +191,7 @@ int matched(vector<int> items, map<int, vector<Entry> > matrix, int prev_matched
     return matched_index;
 }
 
-vector<vector<int> > find_matched_items(vector<vector<int> > pattern){
+vector<vector<int> > find_matched_indexes(vector<vector<int> > pattern){
     int j;
     vector<vector<int> > items_positions;
     // Find each matrix matched positions
@@ -201,14 +201,14 @@ vector<vector<int> > find_matched_items(vector<vector<int> > pattern){
         vector<int> temp;
         // Match step by step(itemset)
         for (j = 0; j < pattern.size(); j++) {
-            matched_itemset = matched(pattern[j], matrices[i], matched_itemset);
+            matched_itemset = match(pattern[j], matrices[i], matched_itemset);
             if (matched_itemset == -1) break;
         }
         
         // Pivot exist, find the remain matched item's position
         while (matched_itemset != -1) {
             temp.push_back(matched_itemset);
-            matched_itemset = matched(pattern[j-1], matrices[i], matched_itemset);
+            matched_itemset = match(pattern[j-1], matrices[i], matched_itemset);
         }
 
         items_positions.push_back(temp);
@@ -295,15 +295,11 @@ void candidate_generate(int last_item, vector<vector<UT_E> > list_of_utilities, 
         if (utilities.size() != 0){
             // Find I-Concat item
             int item_row = find_row_index(last_item, sequences[i]);
-            for (int j = item_row+1; j < sequences[i].size(); j++){
-                iset.insert(sequences[i][j]);
-            }
+            for (int j = item_row+1; j < sequences[i].size(); j++) iset.insert(sequences[i][j]);
 
             // Find S-Concat item
             if (utilities[0].index < matrices[i].size()-1){
-                for (int j = item_row+1; j < sequences[i].size(); j++){
-                    sset.insert(sequences[i][j]);
-                }
+                for (int j = item_row+1; j < sequences[i].size(); j++) sset.insert(sequences[i][j]);
             }
         }
     }
@@ -330,11 +326,14 @@ void candidate_generate(int last_item, vector<vector<UT_E> > list_of_utilities, 
    
     // Create slist 
     for (set<int>::iterator it = sset.begin(); it != sset.end(); ++it) ilist.push_back(*it){
+        vector<vector<UT_E> > temp;
+        for (int i = 0; i < matrices.size(); i++){
+        }
     }
 }
 
 void USpan(vector<vector<int> > pattern, vector<int> utility){
-    vector<vector<int> > items_positions = find_matched_items(pattern);
+    vector<vector<int> > items_positions = find_matched_indexes(pattern);
     
     // If not pass the depth pruning then return(arrive the leaf node)
     if (depth_pruning(pattern, utility, items_positions) != true) return;
@@ -354,7 +353,7 @@ void ConcatenationFunc(vector<vector<int> > pattern, vector<int> utility, vector
         vector<vector<int> > new_pattern = IConcat(pattern, list[i]);
 
         // Find matched position of the new pattern.
-        vector<vector<int> > matched_index = find_matched_items(new_pattern);
+        vector<vector<int> > matched_index = find_matched_indexes(new_pattern);
 
         // Calculate utilities of the new pattern.
         for (int idx = 0; idx != matrices.size(); idx++) {
