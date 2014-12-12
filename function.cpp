@@ -191,13 +191,13 @@ int match(vector<int> items, map<int, vector<Entry> > matrix, int prev_matched){
     return matched_index;
 }
 
-vector<vector<int> > find_matched_indexes(vector<vector<int> > pattern){
+vector<vector<int> > find_matched_indexes(vector<vector<int> > pattern, int prev_matched=-1){
     int j;
     vector<vector<int> > items_positions;
     // Find each matrix matched positions
     for (int i = 0; i < matrices.size(); i++) { // Iterate matrix
         // Index of matched itemset
-        int matched_itemset = -1;
+        int matched_itemset = prev_matched;
         vector<int> temp;
         // Match step by step(itemset)
         for (j = 0; j < pattern.size(); j++) {
@@ -286,6 +286,12 @@ int find_row_index(int last_item, vector<int> sequence){
     return item_row;
 }
 
+vector<vector<UT_E> > find_s_candidates(int item, vector<vector<UT_E> > list_of_utilities){
+    vector<vector<int> > search_pattern;
+    search_pattern.push_back(new vector<int>);
+    search_pattern[0].push_back(item);
+}
+
 void candidate_generate(int last_item, vector<vector<UT_E> > list_of_utilities, map<int, vector<vector<UT_E> > > &ilist, map<int, vector<vector<UT_E> > > &slist){
     set<int> iset, sset;
     for (int i = 0; i < matrices.size(); i++){
@@ -306,29 +312,47 @@ void candidate_generate(int last_item, vector<vector<UT_E> > list_of_utilities, 
 
     // Create ilist
     for (set<int>::iterator it = iset.begin(); it != iset.end(); ++it){
-        vector<vector<UT_E> > temp;
+        vector<vector<UT_E> > list_of_candidates;
         for (int i = 0; i < matrices.size(); i++){
-            vector<UT_E> end_items;
+            vector<UT_E> candidates;
             vector<UT_E> utilities = list_of_utilities[i];
             for (int j = 0; j < utilities.size(); j++){
                 int col = utilities[j].index;
-                int cum_utility = utilities[j].utility;
-                if (matrices[i][last_item][col].self > 0){
+                if (matrices[i][*it][col].self > 0){
                     vector<UT_E> e;
-                    e.index = col; e.utility = cum_utility + matrices[i][last_item][col].self;
-                    end_items.push_back(e);
+                    e.index = col; e.utility = utilities[j].utility + matrices[i][*it][col].self;
+                    candidates.push_back(e);
                 }
             }
-            temp.push_back(end_items);
+            list_of_candidates.push_back(candidates);
         }
-        ilist[*it] = temp;
+        ilist[*it] = list_of_candidates;
     }
-   
+
     // Create slist 
-    for (set<int>::iterator it = sset.begin(); it != sset.end(); ++it) ilist.push_back(*it){
-        vector<vector<UT_E> > temp;
+    for (set<int>::iterator it = sset.begin(); it != sset.end(); ++it) {
+        
+        vector<vector<UT_E> > list_of_candidates = find_s_candidates(*it, list_of_utilities);
         for (int i = 0; i < matrices.size(); i++){
+            vector<UT_E> utilities = list_of_utilities[i];
+            vector<UT_E> candidates = list_of_candidates[i];
+
+            // Fill the max ancestor utility
+            for (int j = 0; j < candidates.size(); j++){
+                for (int k = 0; k < utilities.size(); k++){
+                    // S-Conat item must locate after pattern
+                    if (!(utilities[k].index < candidates[j].index)) break;
+                    if (utilities[k].utility > candidates[j].utility) candidates[j].utility = utilities[k].utility;
+                }
+            }
+
+            // Add the self utility
+            for (int j = 0; j < candidates.size(); j++){
+                int col = utilities[j].index;
+                candidates[j].utility += matrices[i][*it][col].self;
+            }
         }
+        slist[*it] = list_of_candidates;
     }
 }
 
