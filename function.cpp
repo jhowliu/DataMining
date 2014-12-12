@@ -376,7 +376,7 @@ void candidate_generate(int last_item, vector<vector<UT_E> > list_of_utilities, 
     }
 }
 
-void USpan(vector<vector<int> > pattern, vector<vector<UT_E> > utilities) {
+void USpan(vector<vector<int> > pattern, vector<vector<UT_E> > list_of_utilities) {
     vector<vector<int> > items_positions = find_matched_indexes(pattern);
     
     // If not pass the depth pruning then return(arrive the leaf node)

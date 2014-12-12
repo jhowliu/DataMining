@@ -43,4 +43,4 @@ vector<vector<int> > find_matched_items(vector<vector<int> > pattern);
 void width_pruning(vector<vector<int> > pattern, vector<int> &ilist, vector<int> &slist, vector<vector<int> > items_positions);
 bool depth_pruning(vector<vector<int> > pattern, vector<int> utility, vector<vector<int> > items_positions);
 void candidate_generate(vector<vector<int> > pattern, vector<int> &ilist, vector<int> &slist, vector<vector<int> > items_positions);
-void USpan(vector<vector<int> > pattern, vector<int> utility);
+void USpan(vector<vector<int> > pattern, vector<vector<UT_E> > list_of_utilities);
