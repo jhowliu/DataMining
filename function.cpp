@@ -396,7 +396,7 @@ void USpan(vector<vector<int> > pattern, vector<vector<UT_E> > list_of_utilities
 void ConcatenationFunc(vector<vector<int> > pattern, map<int, vector<vector<UT_E> > > list, CONCATENATION method) {
     vector<vector<int> > newPattern;
 
-    for (map<vector<vector<UT_E> > >::iterator it = list.begin(); it != list.end(); it++) 
+    for (map<int, vector<vector<UT_E> > >::iterator it = list.begin(); it != list.end(); it++) 
     {
         int maxUtilities = 0;
         // Create a new pattern
