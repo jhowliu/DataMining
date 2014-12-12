@@ -273,37 +273,64 @@ bool depth_pruning(int last_item, vector<vector<UT_E> > list_of_utilities){
     return sigma >= threshold;
 }
 
-void candidate_generate(vector<vector<int> > pattern, vector<int> &ilist, vector<int> &slist, vector<vector<int> > items_positions){
-    int a = pattern.size()-1;
-    int b = pattern[a].size()-1;
-    int last_item = pattern[a][b];
+// Find the item index in the given sequence, if not find return -1
+int find_row_index(int last_item, vector<int> sequence){
+    int item_row = -1
+    for (int i = 0; i < sequence.size(); i++){
+        if (sequence[i] == last_item){
+            item_row = j;
+            break;
+        }
+    }
     
+    return item_row;
+}
+
+void candidate_generate(int last_item, vector<vector<UT_E> > list_of_utilities, map<int, vector<vector<UT_E> > > &ilist, map<int, vector<vector<UT_E> > > &slist){
     set<int> iset, sset;
     for (int i = 0; i < matrices.size(); i++){
-        // Check pivot exist
-        if (items_positions[i].size() > 0){
-            // Item index in the sequence
-            int last_item_index; 
-            for (int j = 0; j < sequences[i].size(); j++){
-                if (sequences[i][j] == last_item){
-                    last_item_index = j;
-                    break;
-                }
+        vector<UT_E> utilities = list_of_utilities[i];
+
+        // Exist at least one end item
+        if (utilities.size() != 0){
+            // Find I-Concat item
+            int item_row = find_row_index(last_item, sequences[i]);
+            for (int j = item_row+1; j < sequences[i].size(); j++){
+                iset.insert(sequences[i][j]);
             }
 
-            // Add the remain item to iset
-            for (int j = last_item_index+1; j < sequences[i].size(); j++) iset.insert(sequences[i][j]);
-            
-            // If the pivot index not the last itemset, then s concat all the item in the sequence
-            if (items_positions[i][0] < matrices[i].size()-1){
-                for (int j = 0; j < sequences[i].size(); j++) sset.insert(sequences[i][j]);
+            // Find S-Concat item
+            if (utilities[0].index < matrices[i].size()-1){
+                for (int j = item_row+1; j < sequences[i].size(); j++){
+                    sset.insert(sequences[i][j]);
+                }
             }
         }
     }
 
-    // Convert set to list
-    for (set<int>::iterator it = iset.begin(); it != iset.end(); ++it) ilist.push_back(*it);
-    for (set<int>::iterator it = sset.begin(); it != sset.end(); ++it) ilist.push_back(*it);
+    // Create ilist
+    for (set<int>::iterator it = iset.begin(); it != iset.end(); ++it){
+        vector<vector<UT_E> > temp;
+        for (int i = 0; i < matrices.size(); i++){
+            vector<UT_E> end_items;
+            vector<UT_E> utilities = list_of_utilities[i];
+            for (int j = 0; j < utilities.size(); j++){
+                int col = utilities[j].index;
+                int cum_utility = utilities[j].utility;
+                if (matrices[i][last_item][col].self > 0){
+                    vector<UT_E> e;
+                    e.index = col; e.utility = cum_utility + matrices[i][last_item][col].self;
+                    end_items.push_back(e);
+                }
+            }
+            temp.push_back(end_items);
+        }
+        ilist[*it] = temp;
+    }
+   
+    // Create slist 
+    for (set<int>::iterator it = sset.begin(); it != sset.end(); ++it) ilist.push_back(*it){
+    }
 }
 
 void USpan(vector<vector<int> > pattern, vector<int> utility){
