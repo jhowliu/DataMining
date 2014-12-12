@@ -20,10 +20,6 @@ void set_args(vector<map<int, vector<Entry> > > mx, vector<vector<int> > seq){
     sequences = seq;
 }
 
-void test(){
-    PrintMatrix(matrices, sequences);
-}
-
 vector<map<int, vector<Entry> > > reader(char *fileName, vector<vector<int> > &sequences) {
     vector<map<int, vector<Entry> > > matrix;
     char buf[SIZE];
@@ -373,39 +369,52 @@ void candidate_generate(int last_item, vector<vector<UT_E> > list_of_utilities, 
     }
 }
 
-void USpan(vector<vector<int> > pattern, vector<int> utility){
+void USpan(vector<vector<int> > pattern, vector<vector<UT_E> > utilities) {
     vector<vector<int> > items_positions = find_matched_indexes(pattern);
     
     // If not pass the depth pruning then return(arrive the leaf node)
-    if (depth_pruning(pattern, utility, items_positions) != true) return;
+    if (depth_pruning(pattern, utilities, items_positions) != true) return;
 
-    vector<int> ilist, slist;
+    map<int, vector<vector<UT_E> > > ilist, slist;
+
     candidate_generate(pattern, ilist, slist, items_positions);
     width_pruning(pattern, ilist, slist, items_positions);
     
     // I-Concatenation
-    ConcatenationFunc(pattern, utility, ilist);
+    ConcatenationFunc(pattern, ilist, ICONCAT);
     // S-Concatenation
-    ConcatenationFunc(pattern, utility, slist);
+    ConcatenationFunc(pattern, slist, SCONCAT);
 }
 
-void ConcatenationFunc(vector<vector<int> > pattern, vector<int> utility, vector<int> list) {
-    for (int i = 0; i != list.size(); i++) {
-        vector<vector<int> > new_pattern = IConcat(pattern, list[i]);
+void ConcatenationFunc(vector<vector<int> > pattern, map<int, vector<vector<UT_E> > > list, CONCATENATION method) {
+    vector<vector<int> > newPattern;
 
-        // Find matched position of the new pattern.
-        vector<vector<int> > matched_index = find_matched_indexes(new_pattern);
-
-        // Calculate utilities of the new pattern.
-        for (int idx = 0; idx != matrices.size(); idx++) {
-            int max_utility = 0;
-            vector<int> tmp_utility = cal_utility(matrices[idx], list[i], matched_index[idx], utility, &max_utility);
-
-            // Output the new pattern if its maximum utility is larger than threshold.
-            if (max_utility > threshold) PrintPattern(new_pattern);
-
-            USpan(new_pattern, tmp_utility);
+    for (map<vector<vector<UT_E> > >::iterator it = list.begin(); it != list.end(); it++) 
+    {
+        int maxUtilities = 0;
+        // Create a new pattern
+        switch (method) 
+        {
+            case ICONCAT:
+                newPattern = IConcat(pattern, it->first); break;
+            case SCONCAT:
+                newPattern = SConcat(pattern, it->first); break;
         }
+        // Iterate matrix
+        for (vector<vector<UT_E> >::iterator v_it = (it->second).begin(); v_it != (it->second).end(); v_it++) 
+        {
+            int max = -1;
+            // Iterate all utility of the new pattern
+            for (vector<UT_E>::iterator iter; iter != v_it->begin(); iter++) 
+            {
+                // Get maximum utility in each matrix for new pattern
+                if (iter->utility > max) max = iter->utility;
+            }
+
+            if (max != -1) maxUtilities += max;
+        }
+        
+        if (maxUtilities > threshold) USpan(newPattern, list[it->first]);
     }
 }
 
