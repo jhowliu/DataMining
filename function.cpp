@@ -213,43 +213,50 @@ vector<vector<int> > find_matched_indexes(vector<vector<int> > pattern){
     return items_positions;
 }
 
-void width_pruning(vector<vector<int> > pattern, vector<int> &ilist, vector<int> &slist, vector<vector<int> > items_positions){
-    // Pruning ilist 
-    for (int i = ilist.size()-1; i >= 0; i--) {
+vector<int> get_keys(map<int, vector<vector<UT_E> > > dict){
+    vector<int> keys;
+    for (map<int, vector<vector<UT_E> > >::iterator it = ilist.begin(); it != ilist.end(); ++it)
+        keys.push_back(it->first);
+
+    return keys;
+}
+
+void width_pruning(map<int, vector<vector<UT_E> > > &ilist, map<int, vector<vector<UT_E> > > &slist){
+    // Pruning ilist
+    vector<int> keys;
+    keys = get_keys(ilist);
+    for (vector<int>::iterator it = keys.begin(); it != keys.end(); ++it){
         int swu = 0;
-        int item = ilist[i];
-        for (int j = 0; j < matrices.size(); j++){
-            // Check the concat item if valid in the matrix
-            if (matrices[j].count(item) == 0) continue;
-            for (int k = 0; k < items_positions[j].size(); k++){
-                int col = items_positions[j][k];
-                if (matrices[j][item][col].self > 0){
-                    swu += total_utilities[j];
-                    break;
-                }
+        for (int i = 0; i < matrices.size(); i++){
+            // First item in the matrix
+            int item = sequences[i][0];
+            vector<UT_E> candidates = ilist[*it][i];
+            // Has candidate mean the pattern is matched in the matrix
+            if (candidates.size() > 0){
+                swu += matrices[i][item][0].self + matrices[i][item][0].remain;
             }
         }
 
         // Pruning the unquilified item
-        if (swu < threshold) ilist.erase(ilist.begin()+i);
+        if (swu < threshold) ilist.erase(*it);
     }
 
-    // Pruning slist 
-    for (int i = slist.size()-1; i >= 0; i--){
+    // Pruning slist
+    keys = get_keys(slist);
+    for (vector<int>::iterator it = keys.begin(); it != keys.end(); ++it){
         int swu = 0;
-        vector<int> items;
-        items.push_back(slist[i]);
-        for (int j = 0; j < matrices.size(); j++){
-            if (items_positions[j].size() > 0){
-                int pivot_i = items_positions[j][0];
-                
-                // Check the concat item if valid
-                if (matched(items, matrices[j], pivot_i) == -1) swu += total_utilities[j];
+        for (int i = 0; i < matrices.size(); i++){
+            // First item in the matrix
+            int item = sequences[i][0];
+            vector<UT_E> candidates = slist[*it][i];
+            // Has candidate mean the pattern is matched in the matrix
+            if (candidates.size() > 0){
+                swu += matrices[i][item][0].self + matrices[i][item][0].remain;
             }
         }
 
         // Pruning the unquilified item
-        if (swu < threshold) slist.erase(slist.begin()+i);
+        if (swu < threshold) slist.erase(*it);
     }
 }
 
