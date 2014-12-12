@@ -191,13 +191,13 @@ int match(vector<int> items, map<int, vector<Entry> > matrix, int prev_matched){
     return matched_index;
 }
 
-vector<vector<int> > find_matched_indexes(vector<vector<int> > pattern, int prev_matched=-1){
+vector<vector<int> > find_matched_indexes(vector<vector<int> > pattern){
     int j;
     vector<vector<int> > items_positions;
     // Find each matrix matched positions
     for (int i = 0; i < matrices.size(); i++) { // Iterate matrix
         // Index of matched itemset
-        int matched_itemset = prev_matched;
+        int matched_itemset = -1;
         vector<int> temp;
         // Match step by step(itemset)
         for (j = 0; j < pattern.size(); j++) {
@@ -286,10 +286,27 @@ int find_row_index(int last_item, vector<int> sequence){
     return item_row;
 }
 
+// Find all the S-concat item after the pivot itemset
+// Besides, the utility of the candidates are initiated to -1
 vector<vector<UT_E> > find_s_candidates(int item, vector<vector<UT_E> > list_of_utilities){
-    vector<vector<int> > search_pattern;
-    search_pattern.push_back(new vector<int>);
-    search_pattern[0].push_back(item);
+    vector<vector<UT_E> > list_of_candidates;
+    for (int i = 0; i < matrices.size(); i++){
+        vector<UT_E> candidates;
+        if (list_of_utilities[i].size() > 0){
+            int mathed_index = list_of_utilities[i][0].index;
+            while (mathed_index != -1){
+                mathed_index = match(item, matrices[i], mathed_index);
+                if (mathed_index != -1) {
+                    UT_E e;
+                    e.index = mathed_index; e.utility = -1;
+                    candidates.push_back(e);
+                }
+            }
+        }
+        list_of_candidates.push_back(candidates);
+    }
+
+    return list_of_candidates;
 }
 
 void candidate_generate(int last_item, vector<vector<UT_E> > list_of_utilities, map<int, vector<vector<UT_E> > > &ilist, map<int, vector<vector<UT_E> > > &slist){
@@ -319,7 +336,7 @@ void candidate_generate(int last_item, vector<vector<UT_E> > list_of_utilities, 
             for (int j = 0; j < utilities.size(); j++){
                 int col = utilities[j].index;
                 if (matrices[i][*it][col].self > 0){
-                    vector<UT_E> e;
+                    UT_E e;
                     e.index = col; e.utility = utilities[j].utility + matrices[i][*it][col].self;
                     candidates.push_back(e);
                 }
