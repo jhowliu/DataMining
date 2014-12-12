@@ -102,6 +102,58 @@ vector<map<int, vector<Entry> > > reader(char *fileName, vector<vector<int> > &s
     return matrix;
 }
 
+void PrintMatrix(vector<map<int, vector<Entry> > > matrix, vector<vector<int> > sequences) {
+    for (int i = 0; i != matrix.size(); i++) 
+    {
+        for (int j = 0; j != sequences[i].size(); j++) 
+        {
+            cout << (char)('0' + sequences[i][j]) << " ";
+            for (vector<Entry>::iterator iter = matrix[i][sequences[i][j]].begin(); iter != matrix[i][sequences[i][j]].end(); iter++) 
+                cout << "(" << iter->self << "," << iter->remain << ") ";
+            cout << endl;
+        }
+        cout << endl;
+    }
+}
+
+// Calculate the utility of current pattern after concating the new pattern.
+vector<int> cal_utility(map<int, vector<Entry> > matrix, int pattern, vector<int> pattern_index, vector<int> utility, int *max_utility) {
+    vector<int> utilities;
+    int max = 0;
+    int index = 0;
+    
+    for (vector<int>::iterator iter = pattern_index.begin(); iter != pattern_index.end(); iter++) 
+    {
+        int tmp = utility[index++] + matrix[pattern][*iter].self;
+        utilities.push_back(tmp);
+        if (tmp > max) 
+            max = tmp;
+    }
+
+    *max_utility = max;
+
+    return utilities;
+}
+
+// S-Concatenation in the different itemsets.
+vector<vector<int> > SConcat(vector<vector<int> > p, int candidate) {
+    vector<int> tmp;
+
+    tmp.push_back(candidate);
+    p.push_back(tmp);
+
+    return p;
+}
+
+// I-Concatenation in the same itemset.
+vector<vector<int> > IConcat(vector<vector<int> > p, int candidate) {
+    vector<int> *tmp = &(p.back());
+    
+    tmp->push_back(candidate);
+
+    return p;
+}
+
 int match(vector<int> items, map<int, vector<Entry> > matrix, int prev_matched){
     int matched_index = -1;
     bool exist = true;
@@ -330,6 +382,55 @@ void candidate_generate(int last_item, vector<vector<UT_E> > list_of_utilities, 
     }
 }
 
+void ConcatenationFunc(vector<vector<int> > pattern, map<int, vector<vector<UT_E> > > list, CONCATENATION method) {
+    vector<vector<int> > newPattern;
+
+    for (map<int, vector<vector<UT_E> > >::iterator it = list.begin(); it != list.end(); it++) 
+    {
+        int maxUtilities = 0;
+        // Create a new pattern
+        switch (method) 
+        {
+            case ICONCAT:
+                newPattern = IConcat(pattern, it->first); break;
+            case SCONCAT:
+                newPattern = SConcat(pattern, it->first); break;
+        }
+        // Iterate matrix
+        for (vector<vector<UT_E> >::iterator v_it = (it->second).begin(); v_it != (it->second).end(); v_it++) 
+        {
+            int max = -1;
+            // Iterate all utility of the new pattern
+            for (vector<UT_E>::iterator iter; iter != v_it->begin(); iter++) 
+            {
+                // Get maximum utility in each matrix for new pattern
+                if (iter->utility > max) max = iter->utility;
+            }
+
+            if (max != -1) maxUtilities += max;
+        }
+        
+        if (maxUtilities > threshold) USpan(newPattern, list[it->first]);
+    }
+}
+
+void PrintPattern(vector<vector<int> > p) {
+    char buf[20];
+    for (int i = 0; i != p.size(); i++) 
+    {
+        cout << "(";
+        for (int j = 0; j != p[i].size(); j++) 
+        {
+            sprintf(buf, "%d", p[i][j]); 
+            cout << buf;
+            if (j != p[i].size()-1) cout << ",";
+            buf[0] = 0;
+        }
+        cout << ")";
+    }
+    cout << endl;
+}
+
 void USpan(vector<vector<int> > pattern, vector<vector<UT_E> > list_of_utilities){
     int last_itemset_i = pattern.size()-1;
     int last_item_i = pattern[last_itemset_i].size()-1;
@@ -344,26 +445,8 @@ void USpan(vector<vector<int> > pattern, vector<vector<UT_E> > list_of_utilities
 
     width_pruning(ilist, slist);
 
-    // I-Concat example
-    // Iter the item
-    for(map<int, vector<vector<UT_E> > >::iterator it = ilist.begin(); it != ilist.end(); ++it){
-        int sum_max_utility = 0;
-        // Iter matrix index
-        for(int m_i = 0; m_i < matrices.size(); m_i){
-            vector<UT_E> end_items = ilist[it->first][m_i];
-            int max_utility = -1;
-            // Iter the end items to find the max utility
-            for (int i = 0; end_items.size(); i++){
-                if (end_items[i].utility > max_utility){
-                    max_utility = end_items[i].utility;
-                }
-            }
-            
-            if (max_utility > -1) sum_max_utility += max_utility;
-        }
-
-        // New pattern = pattern I-concat with *it
-        // Print New pattern, sum_max_utility
-        //USpan(New pattern, ilist[*it])
-    }
+    // I-Concatenation
+    ConcatenationFunc(pattern, ilist, ICONCAT);
+    // S-Concatenation
+    ConcatenationFunc(pattern, slist, SCONCAT);
 }

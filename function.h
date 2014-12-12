@@ -4,11 +4,12 @@
 
 #define SIZE 2048
 
+enum CONCATENATION { ICONCAT, SCONCAT };
 // Utility entry
-typedef struct{
+typedef struct {
     int index;
     int utility;
-}UT_E;
+} UT_E;
 
 // Matrix Entry tuple(self, remaining utility)
 typedef struct {
@@ -27,7 +28,7 @@ void PrintMatrix(vector<map<int, vector<Entry> > > matrix, vector<vector<int> > 
 vector<map<int, vector<Entry> > > reader(char *fileName, vector<vector<int> > &sequences);
 
 // Tool 
-void ConcatenationFunc(vector<vector<int> > pattern, vector<int> utility, vector<int> list);
+void ConcatenationFunc(vector<vector<int> > pattern, map<int, vector<vector<UT_E> > > utilities, CONCATENATION method);
 void PrintPattern(vector<vector<int> > p);
 
 // Concatenation

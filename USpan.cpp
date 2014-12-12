@@ -5,7 +5,8 @@ int main(int argc, char **argv){
     vector<vector<int> > sequences;
     matrices = reader(argv[1], sequences);
 
-    set_args(matrices, sequences); 
+    set_args(matrices, sequences);
+    PrintMatrix(matrices, sequences);
     //reader(argv[1], sequences);
     return 0;
 }
