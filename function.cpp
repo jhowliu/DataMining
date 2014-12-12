@@ -383,22 +383,6 @@ void candidate_generate(int last_item, vector<vector<UT_E> > list_of_utilities, 
     }
 }
 
-void USpan(vector<vector<int> > pattern, vector<int> utility){
-    vector<vector<int> > items_positions = find_matched_indexes(pattern);
-    
-    // If not pass the depth pruning then return(arrive the leaf node)
-    if (depth_pruning(pattern, utility, items_positions) != true) return;
-
-    vector<int> ilist, slist;
-    candidate_generate(pattern, ilist, slist, items_positions);
-    width_pruning(pattern, ilist, slist, items_positions);
-    
-    // I-Concatenation
-    ConcatenationFunc(pattern, utility, ilist);
-    // S-Concatenation
-    ConcatenationFunc(pattern, utility, slist);
-}
-
 void ConcatenationFunc(vector<vector<int> > pattern, vector<int> utility, vector<int> list) {
     for (int i = 0; i != list.size(); i++) {
         vector<vector<int> > new_pattern = IConcat(pattern, list[i]);
