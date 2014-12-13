@@ -13,66 +13,6 @@ vector<map<int, vector<Entry> > > matrices;
 // Sorted sequence
 vector<vector<int> > sequences;
 
-void test(){
-    map<int, vector<vector<UT_E> > > ilist, slist;
-    vector<vector<UT_E> > list_of_utilities;
-    vector<vector<int> > pattern;
-    vector<int> p;
-
-    p.push_back('b' - '0');
-    pattern.push_back(p);
-
-    for (int i = 0; i < matrices.size(); i++){
-        vector<UT_E> utilities;
-        UT_E e;
-        if (i == 0){
-            e.index = 2; e.utility = 10;
-            utilities.push_back(e);
-        }
-        else if (i == 1){
-            e.index = 1; e.utility = 5;
-            utilities.push_back(e);
-        }
-        else if (i == 2){
-        }
-        else if (i == 3){
-            e.index = 0; e.utility = 10;
-            utilities.push_back(e);
-            e.index = 2; e.utility = 5;
-            utilities.push_back(e);
-        }
-        else if (i == 4){
-            e.index = 0; e.utility = 10;
-            utilities.push_back(e);
-            e.index = 2; e.utility = 5;
-            utilities.push_back(e);
-        }
-        list_of_utilities.push_back(utilities);
-    }
-
-    cout << "Generate " << (char)(sequences[0][0] + '0') << " candidates" << endl;
-    cout << "Threshold: " << threshold << endl;
-    candidate_generate(sequences[0][0], list_of_utilities, ilist, slist);
-    /*
-    vector<int> keys = get_keys(ilist);
-    int key = keys[2];
-    cout << "Concate " << (char)(key + '0') << endl;
-    for (int i = 0; i < matrices.size(); i++){
-        cout << "Matrix " << i << "-----------------" << endl;
-        for (int j = 0; j < ilist[key][i].size(); j++){
-            printf("(%d, %d) ", ilist[key][i][j].index, ilist[key][i][j].utility);
-        }
-        printf("\n");
-    }
-    */
-    PrintPattern(pattern);
-    cout << endl;
-    cout << "I-Concatenation" << endl;
-    ConcatenationFunc(pattern, ilist, ICONCAT);
-    cout << "S-Concatenation" << endl;
-    ConcatenationFunc(pattern, slist, SCONCAT);
-}
-
 void set_args(vector<map<int, vector<Entry> > > mx, vector<vector<int> > seq){
     matrices = mx;
     sequences = seq;
@@ -480,7 +420,7 @@ void ConcatenationFunc(vector<vector<int> > pattern, map<int, vector<vector<UT_E
         }
         if (maxUtilities > threshold) {
             PrintPattern(newPattern);
-            cout << ", " << maxUtilities << endl; 
+            cout << " " << maxUtilities << endl; 
         }
              
         USpan(newPattern, list[it->first]);
@@ -524,6 +464,8 @@ void USpan(vector<vector<int> > pattern, vector<vector<UT_E> > list_of_utilities
 
 void run(){
     set<int> item_set;
+
+    // Create 1-sequence 
     for (int i = 0; i < sequences.size(); i++){
         for (int j = 0; j < sequences[i].size(); j++) item_set.insert(sequences[i][j]);
     }
