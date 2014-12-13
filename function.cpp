@@ -361,7 +361,7 @@ bool depth_pruning(int last_item, vector<vector<UT_E> > list_of_utilities){
         if (utilities.size() != 0){
             int col = utilities[0].index;
             // Rest utility + Current pattern utility
-            sigma = matrices[i][last_item][col].remain + utilities[0].utility;
+            sigma += (matrices[i][last_item][col].remain + utilities[0].utility);
         }
     }
 
