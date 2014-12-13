@@ -13,6 +13,39 @@ vector<map<int, vector<Entry> > > matrices;
 // Sorted sequence
 vector<vector<int> > sequences;
 
+void test(){
+    int a;
+    vector<vector<int> > list_of_indexes;
+    vector<vector<int> > p;
+    vector<int> items1;
+    vector<int> items2;
+    vector<int> *items;
+    //p.push_back(items2);
+    //p.push_back(items1);
+    p.push_back(*(new vector<int>));
+   
+    items = &p[0];
+    items->push_back(sequences[3][1]);
+    items->push_back(sequences[3][3]);
+
+    for (int i = 0; i < p.size(); i++){
+        for (int j = 0; j < p[i].size(); j++){
+            printf("%d ", p[i][j]);
+        }
+        printf("\n");
+    }
+    exit(0);
+
+    list_of_indexes = find_matched_indexes(p);
+    for (int i = 0; i < list_of_indexes.size(); i++){
+        vector<int> indexes = list_of_indexes[i];
+        for (int j = 0; j < indexes.size(); j++){
+            printf("%d ", indexes[j]);
+        }
+        printf("\n");
+    }
+}
+
 void set_args(vector<map<int, vector<Entry> > > mx, vector<vector<int> > seq){
     matrices = mx;
     sequences = seq;
@@ -338,8 +371,8 @@ void candidate_generate(int last_item, vector<vector<UT_E> > list_of_utilities, 
         vector<vector<UT_E> > list_of_candidates;
         for (int i = 0; i < matrices.size(); i++){
             vector<UT_E> utilities = list_of_utilities[i];
-            vector<UT_E> candidates;
-            list_of_candidates.push_back(candidates);
+            list_of_candidates.push_back(*(new vector<UT_E>));
+            vector<UT_E> *candidates = &list_of_candidates[i];
 
             // Check if the matrix has the item
             if (matrices[i].count(*it) == 0) continue;
@@ -348,7 +381,7 @@ void candidate_generate(int last_item, vector<vector<UT_E> > list_of_utilities, 
                 if (matrices[i][*it][col].self > 0){
                     UT_E e;
                     e.index = col; e.utility = utilities[j].utility + matrices[i][*it][col].self;
-                    candidates.push_back(e);
+                    candidates->push_back(e);
                 }
             }
         }
@@ -361,21 +394,21 @@ void candidate_generate(int last_item, vector<vector<UT_E> > list_of_utilities, 
         vector<vector<UT_E> > list_of_candidates = find_s_candidates(*it, list_of_utilities);
         for (int i = 0; i < matrices.size(); i++){
             vector<UT_E> utilities = list_of_utilities[i];
-            vector<UT_E> candidates = list_of_candidates[i];
+            vector<UT_E> *candidates = &list_of_candidates[i];
 
             // Fill the max ancestor utility
-            for (int j = 0; j < candidates.size(); j++){
+            for (int j = 0; j < candidates->size(); j++){
                 for (int k = 0; k < utilities.size(); k++){
                     // S-Conat item must locate after pattern
-                    if (!(utilities[k].index < candidates[j].index)) break;
-                    if (utilities[k].utility > candidates[j].utility) candidates[j].utility = utilities[k].utility;
+                    if (!(utilities[k].index < (*candidates)[j].index)) break;
+                    if (utilities[k].utility > (*candidates)[j].utility) (*candidates)[j].utility = utilities[k].utility;
                 }
             }
 
             // Add the self utility
-            for (int j = 0; j < candidates.size(); j++){
-                int col = candidates[j].index;
-                candidates[j].utility += matrices[i][*it][col].self;
+            for (int j = 0; j < candidates->size(); j++){
+                int col = (*candidates)[j].index;
+                (*candidates)[j].utility += matrices[i][*it][col].self;
             }
         }
         slist[*it] = list_of_candidates;

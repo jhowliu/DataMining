@@ -1,4 +1,6 @@
+#include <stdlib.h>
 #include "function.h"
+
 
 int main(int argc, char **argv){
     vector<map<int, vector<Entry> > > matrices;
@@ -6,7 +8,9 @@ int main(int argc, char **argv){
     matrices = reader(argv[1], sequences);
 
     set_args(matrices, sequences);
+    set_threshold(atoi(argv[2]));
     PrintMatrix(matrices, sequences);
-    //reader(argv[1], sequences);
+
+    test();
     return 0;
 }

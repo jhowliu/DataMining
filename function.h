@@ -19,6 +19,8 @@ typedef struct {
 
 using namespace std;
 
+void test();
+
 // Parameter set
 void set_args(vector<map<int, vector<Entry> > > mx, vector<vector<int> > seq);
 void set_threshold(int th);
@@ -32,8 +34,8 @@ void ConcatenationFunc(vector<vector<int> > pattern, map<int, vector<vector<UT_E
 void PrintPattern(vector<vector<int> > p);
 
 // Concatenation
-vector<vector<int> > IConcat(vector<vector<int> > *p, int candidate);
-vector<vector<int> > SConcat(vector<vector<int> > *p, int candidate);
+vector<vector<int> > IConcat(vector<vector<int> > p, int candidate);
+vector<vector<int> > SConcat(vector<vector<int> > p, int candidate);
 
 // Utility calculation with candidates.
 vector<int> cal_utility(map<int, vector<Entry> > matrix, int pattern, vector<int> pattern_index, vector<int> utility, int *max_utility);
