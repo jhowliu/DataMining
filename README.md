@@ -1,4 +1,4 @@
-DataMining Final Project DEMO - Paper implement
+DataMining Final Project DEMO
 ==========
 
-USpan: An Efficient Algorithm for Mining High Utility Sequential Patterns 
+USpan: An Efficient Algorithm for Mining High Utility Sequential Patterns
