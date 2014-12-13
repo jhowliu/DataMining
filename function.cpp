@@ -14,36 +14,6 @@ vector<map<int, vector<Entry> > > matrices;
 vector<vector<int> > sequences;
 
 void test(){
-    //int a;
-    //vector<vector<int> > list_of_indexes;
-    //vector<vector<int> > p;
-    //vector<int> items1;
-    //vector<int> items2;
-    //vector<int> *items;
-    ////p.push_back(items2);
-    ////p.push_back(items1);
-    //p.push_back(*(new vector<int>));
-   
-    //items = &p[0];
-    //items->push_back(sequences[3][1]);
-    //items->push_back(sequences[3][3]);
-
-    //for (int i = 0; i < p.size(); i++){
-    //    for (int j = 0; j < p[i].size(); j++){
-    //        printf("%d ", p[i][j]);
-    //    }
-    //    printf("\n");
-    //}
-    //exit(0);
-
-    //list_of_indexes = find_matched_indexes(p);
-    //for (int i = 0; i < list_of_indexes.size(); i++){
-    //    vector<int> indexes = list_of_indexes[i];
-    //    for (int j = 0; j < indexes.size(); j++){
-    //        printf("%d ", indexes[j]);
-    //    }
-    //    printf("\n");
-    //}
     map<int, vector<vector<UT_E> > > ilist, slist;
     vector<vector<UT_E> > list_of_utilities;
     vector<vector<int> > pattern;
@@ -450,7 +420,6 @@ void candidate_generate(int last_item, vector<vector<UT_E> > list_of_utilities, 
 
     // Create slist 
     for (set<int>::iterator it = sset.begin(); it != sset.end(); ++it) {
-        
         vector<vector<UT_E> > list_of_candidates = find_s_candidates(*it, list_of_utilities);
         for (int i = 0; i < matrices.size(); i++){
             vector<UT_E> utilities = list_of_utilities[i];
@@ -551,4 +520,32 @@ void USpan(vector<vector<int> > pattern, vector<vector<UT_E> > list_of_utilities
     ConcatenationFunc(pattern, ilist, ICONCAT);
     // S-Concatenation
     ConcatenationFunc(pattern, slist, SCONCAT);
+}
+
+void run(){
+    set<int> item_set;
+    for (int i = 0; i < sequences.size(); i++){
+        for (int j = 0; j < sequences[i].size(); j++) item_set.insert(sequences[i][j]);
+    }
+
+    for (set<int>::iterator it = item_set.begin(); it != item_set.end(); ++it){
+        vector<vector<int> > pattern;
+        pattern.push_back(*(new vector<int>));
+        pattern[0].push_back(*it);
+
+        vector<vector<int> > list_of_indexes = find_matched_indexes(pattern);
+
+        vector<vector<UT_E> > list_of_utilities;
+        for (int i = 0; i < matrices.size(); i++){
+            vector<UT_E> utilities;
+            for (int j = 0; j < list_of_indexes[i].size(); j++){
+                int col = list_of_indexes[i][j];
+                UT_E e;
+                e.index = col; e.utility = matrices[i][*it][col].self;
+                utilities.push_back(e);
+            }
+            list_of_utilities.push_back(utilities);
+        }
+        USpan(pattern, list_of_utilities);
+    }
 }

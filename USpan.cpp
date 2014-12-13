@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include "function.h"
 
 
@@ -15,6 +16,7 @@ int main(int args, char **argv){
     set_threshold(atoi(argv[2]));
     PrintMatrix(matrices, sequences);
 
-    test();
+    run();
+    //test();
     return 0;
 }

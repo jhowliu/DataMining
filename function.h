@@ -54,3 +54,5 @@ vector<vector<UT_E> > find_s_candidates(int item, vector<vector<UT_E> > list_of_
 void candidate_generate(int last_item, vector<vector<UT_E> > list_of_utilities, map<int, vector<vector<UT_E> > > &ilist, map<int, vector<vector<UT_E> > > &slist);
 
 void USpan(vector<vector<int> > pattern, vector<vector<UT_E> > list_of_utilities);
+
+void run();
