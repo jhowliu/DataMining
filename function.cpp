@@ -46,6 +46,12 @@ void test(){
     //}
     map<int, vector<vector<UT_E> > > ilist, slist;
     vector<vector<UT_E> > list_of_utilities;
+    vector<vector<int> > pattern;
+    vector<int> p;
+
+    p.push_back('b' - '0');
+    pattern.push_back(p);
+
     for (int i = 0; i < matrices.size(); i++){
         vector<UT_E> utilities;
         UT_E e;
@@ -74,17 +80,27 @@ void test(){
         list_of_utilities.push_back(utilities);
     }
 
+    cout << "Generate " << (char)(sequences[0][0] + '0') << " candidates" << endl;
+    cout << "Threshold: " << threshold << endl;
     candidate_generate(sequences[0][0], list_of_utilities, ilist, slist);
+    /*
     vector<int> keys = get_keys(ilist);
     int key = keys[2];
-    printf("k %d\n", key);
+    cout << "Concate " << (char)(key + '0') << endl;
     for (int i = 0; i < matrices.size(); i++){
-        printf("%d =>>>>>>>>>>>>>>>>>>>>>>>>\n\n", i);
+        cout << "Matrix " << i << "-----------------" << endl;
         for (int j = 0; j < ilist[key][i].size(); j++){
             printf("(%d, %d) ", ilist[key][i][j].index, ilist[key][i][j].utility);
         }
         printf("\n");
     }
+    */
+    PrintPattern(pattern);
+    cout << endl;
+    cout << "I-Concatenation" << endl;
+    ConcatenationFunc(pattern, ilist, ICONCAT);
+    cout << "S-Concatenation" << endl;
+    ConcatenationFunc(pattern, slist, SCONCAT);
 }
 
 void set_args(vector<map<int, vector<Entry> > > mx, vector<vector<int> > seq){
@@ -288,6 +304,7 @@ vector<vector<int> > find_matched_indexes(vector<vector<int> > pattern){
     return items_positions;
 }
 
+// Get item for a matrix
 vector<int> get_keys(map<int, vector<vector<UT_E> > > dict){
     vector<int> keys;
     for (map<int, vector<vector<UT_E> > >::iterator it = dict.begin(); it != dict.end(); ++it)
@@ -463,6 +480,7 @@ void ConcatenationFunc(vector<vector<int> > pattern, map<int, vector<vector<UT_E
 
     for (map<int, vector<vector<UT_E> > >::iterator it = list.begin(); it != list.end(); it++) 
     {
+        //cout << "Concate " << (char)(it->first + '0') << endl;
         int maxUtilities = 0;
         // Create a new pattern
         switch (method) 
@@ -472,21 +490,31 @@ void ConcatenationFunc(vector<vector<int> > pattern, map<int, vector<vector<UT_E
             case SCONCAT:
                 newPattern = SConcat(pattern, it->first); break;
         }
+        //cout << "New Pattern : "; 
+        //PrintPattern(newPattern);
+        int i =0;
         // Iterate matrix
         for (vector<vector<UT_E> >::iterator v_it = (it->second).begin(); v_it != (it->second).end(); v_it++) 
         {
             int max = -1;
             // Iterate all utility of the new pattern
-            for (vector<UT_E>::iterator iter; iter != v_it->begin(); iter++) 
+            //cout << "Matrix " << i << ": ";
+            for (vector<UT_E>::iterator iter = v_it->begin(); iter != v_it->end(); iter++) 
             {
                 // Get maximum utility in each matrix for new pattern
+                //cout << "(" << iter->index << "," << iter->utility << ") ";
                 if (iter->utility > max) max = iter->utility;
             }
-
+            i++;
+            //cout << endl;
             if (max != -1) maxUtilities += max;
         }
-        
-        if (maxUtilities > threshold) USpan(newPattern, list[it->first]);
+        if (maxUtilities > threshold) {
+            PrintPattern(newPattern);
+            cout << ", " << maxUtilities << endl; 
+        }
+             
+        USpan(newPattern, list[it->first]);
     }
 }
 
@@ -497,14 +525,12 @@ void PrintPattern(vector<vector<int> > p) {
         cout << "(";
         for (int j = 0; j != p[i].size(); j++) 
         {
-            sprintf(buf, "%d", p[i][j]); 
+            sprintf(buf, "%c", p[i][j]+'0'); 
             cout << buf;
-            if (j != p[i].size()-1) cout << ",";
             buf[0] = 0;
         }
         cout << ")";
     }
-    cout << endl;
 }
 
 void USpan(vector<vector<int> > pattern, vector<vector<UT_E> > list_of_utilities){
