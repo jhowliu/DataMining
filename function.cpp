@@ -526,3 +526,25 @@ void USpan(vector<vector<int> > pattern, vector<vector<UT_E> > list_of_utilities
     // S-Concatenation
     ConcatenationFunc(pattern, slist, SCONCAT);
 }
+
+void run(){
+    set<int> item_set;
+    for (int i = 0; sequences.size(); i++){
+        for (int j = 0; j < sequences[i].size(); j++) item_set.insert(sequences[i][j]);
+    }
+
+    for (set<int>::iterator it = item_set.begin(); it != item_set.end(); ++it){
+        vector<vector<int> > pattern;
+        pattern.push_back(*(new vector<int>));
+        pattern[0].push_back(*it);
+
+        vector<vector<UT_E> > list_of_utilities;
+        for (int i = 0; i < matrices.size(); i++){
+            list_of_utilities.push_back(*(new vector<UT_E>));
+            vector<UT_E> *utilities = &list_of_utilities[i];
+            
+        }
+
+        USpan(pattern, list_of_utilities);
+    }
+}
