@@ -433,7 +433,7 @@ void candidate_generate(int last_item, vector<vector<UT_E> > list_of_utilities, 
 
     // Create slist 
     for (set<int>::iterator it = sset.begin(); it != sset.end(); ++it) {
-        
+        printf("G: %d\n", *it);
         vector<vector<UT_E> > list_of_candidates = find_s_candidates(*it, list_of_utilities);
         for (int i = 0; i < matrices.size(); i++){
             vector<UT_E> utilities = list_of_utilities[i];
@@ -534,7 +534,7 @@ void run(){
     }
 
     for (set<int>::iterator it = item_set.begin(); it != item_set.end(); ++it){
-        printf("%d\n", *it);
+        printf("R %d\n", *it);
         vector<vector<int> > pattern;
         pattern.push_back(*(new vector<int>));
         pattern[0].push_back(*it);
@@ -553,5 +553,6 @@ void run(){
             list_of_utilities.push_back(utilities);
         }
         USpan(pattern, list_of_utilities);
+        exit(0);
     }
 }
