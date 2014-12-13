@@ -6,18 +6,94 @@
 #include <iostream>
 
 int threshold;
+
 // List of mapper matrix
 vector<map<int, vector<Entry> > > matrices;
-
-// Total utility of each
-vector<int> total_utilities;
 
 // Sorted sequence
 vector<vector<int> > sequences;
 
+void test(){
+    //int a;
+    //vector<vector<int> > list_of_indexes;
+    //vector<vector<int> > p;
+    //vector<int> items1;
+    //vector<int> items2;
+    //vector<int> *items;
+    ////p.push_back(items2);
+    ////p.push_back(items1);
+    //p.push_back(*(new vector<int>));
+   
+    //items = &p[0];
+    //items->push_back(sequences[3][1]);
+    //items->push_back(sequences[3][3]);
+
+    //for (int i = 0; i < p.size(); i++){
+    //    for (int j = 0; j < p[i].size(); j++){
+    //        printf("%d ", p[i][j]);
+    //    }
+    //    printf("\n");
+    //}
+    //exit(0);
+
+    //list_of_indexes = find_matched_indexes(p);
+    //for (int i = 0; i < list_of_indexes.size(); i++){
+    //    vector<int> indexes = list_of_indexes[i];
+    //    for (int j = 0; j < indexes.size(); j++){
+    //        printf("%d ", indexes[j]);
+    //    }
+    //    printf("\n");
+    //}
+    map<int, vector<vector<UT_E> > > ilist, slist;
+    vector<vector<UT_E> > list_of_utilities;
+    for (int i = 0; i < matrices.size(); i++){
+        vector<UT_E> utilities;
+        UT_E e;
+        if (i == 0){
+            e.index = 2; e.utility = 10;
+            utilities.push_back(e);
+        }
+        else if (i == 1){
+            e.index = 1; e.utility = 5;
+            utilities.push_back(e);
+        }
+        else if (i == 2){
+        }
+        else if (i == 3){
+            e.index = 0; e.utility = 10;
+            utilities.push_back(e);
+            e.index = 2; e.utility = 5;
+            utilities.push_back(e);
+        }
+        else if (i == 4){
+            e.index = 0; e.utility = 10;
+            utilities.push_back(e);
+            e.index = 2; e.utility = 5;
+            utilities.push_back(e);
+        }
+        list_of_utilities.push_back(utilities);
+    }
+
+    candidate_generate(sequences[0][0], list_of_utilities, ilist, slist);
+    vector<int> keys = get_keys(ilist);
+    int key = keys[2];
+    printf("k %d\n", key);
+    for (int i = 0; i < matrices.size(); i++){
+        printf("%d =>>>>>>>>>>>>>>>>>>>>>>>>\n\n", i);
+        for (int j = 0; j < ilist[key][i].size(); j++){
+            printf("(%d, %d) ", ilist[key][i][j].index, ilist[key][i][j].utility);
+        }
+        printf("\n");
+    }
+}
+
 void set_args(vector<map<int, vector<Entry> > > mx, vector<vector<int> > seq){
     matrices = mx;
     sequences = seq;
+}
+
+void set_threshold(int th){
+    threshold = th;
 }
 
 vector<map<int, vector<Entry> > > reader(char *fileName, vector<vector<int> > &sequences) {
@@ -113,7 +189,6 @@ void PrintMatrix(vector<map<int, vector<Entry> > > matrix, vector<vector<int> > 
         cout << endl;
     }
 }
-
 
 // Calculate the utility of current pattern after concating the new pattern.
 vector<int> cal_utility(map<int, vector<Entry> > matrix, int pattern, vector<int> pattern_index, vector<int> utility, int *max_utility) {
@@ -215,7 +290,7 @@ vector<vector<int> > find_matched_indexes(vector<vector<int> > pattern){
 
 vector<int> get_keys(map<int, vector<vector<UT_E> > > dict){
     vector<int> keys;
-    for (map<int, vector<vector<UT_E> > >::iterator it = ilist.begin(); it != ilist.end(); ++it)
+    for (map<int, vector<vector<UT_E> > >::iterator it = dict.begin(); it != dict.end(); ++it)
         keys.push_back(it->first);
 
     return keys;
@@ -265,10 +340,10 @@ bool depth_pruning(int last_item, vector<vector<UT_E> > list_of_utilities){
     for (int i = 0; i < matrices.size(); i++){
         vector<UT_E> utilities = list_of_utilities[i];
 
-        // Exist at least one end item
+        // Exist at least one end item(first is pivot)
         if (utilities.size() != 0){
             int col = utilities[0].index;
-            // Rest utility + Current pattern utility(pivot)
+            // Rest utility + Current pattern utility
             sigma = matrices[i][last_item][col].remain + utilities[0].utility;
         }
     }
@@ -293,12 +368,14 @@ int find_row_index(int last_item, vector<int> sequence){
 // Besides, the utility of the candidates are initiated to -1
 vector<vector<UT_E> > find_s_candidates(int item, vector<vector<UT_E> > list_of_utilities){
     vector<vector<UT_E> > list_of_candidates;
+    vector<int> search_item;
+    search_item.push_back(item);
     for (int i = 0; i < matrices.size(); i++){
         vector<UT_E> candidates;
         if (list_of_utilities[i].size() > 0){
             int mathed_index = list_of_utilities[i][0].index;
             while (mathed_index != -1){
-                mathed_index = match(item, matrices[i], mathed_index);
+                mathed_index = match(search_item, matrices[i], mathed_index);
                 if (mathed_index != -1) {
                     UT_E e;
                     e.index = mathed_index; e.utility = -1;
@@ -317,15 +394,17 @@ void candidate_generate(int last_item, vector<vector<UT_E> > list_of_utilities, 
     for (int i = 0; i < matrices.size(); i++){
         vector<UT_E> utilities = list_of_utilities[i];
 
-        // Exist at least one end item
+        // Exist at least one end item(first is pivot)
         if (utilities.size() != 0){
             // Find I-Concat item
             int item_row = find_row_index(last_item, sequences[i]);
-            for (int j = item_row+1; j < sequences[i].size(); j++) iset.insert(sequences[i][j]);
+            if (item_row != -1){
+                for (int j = item_row+1; j < sequences[i].size(); j++) iset.insert(sequences[i][j]);
+            }
 
             // Find S-Concat item
             if (utilities[0].index < matrices[i].size()-1){
-                for (int j = item_row+1; j < sequences[i].size(); j++) sset.insert(sequences[i][j]);
+                for (int j = 0; j < sequences[i].size(); j++) sset.insert(sequences[i][j]);
             }
         }
     }
@@ -334,17 +413,20 @@ void candidate_generate(int last_item, vector<vector<UT_E> > list_of_utilities, 
     for (set<int>::iterator it = iset.begin(); it != iset.end(); ++it){
         vector<vector<UT_E> > list_of_candidates;
         for (int i = 0; i < matrices.size(); i++){
-            vector<UT_E> candidates;
             vector<UT_E> utilities = list_of_utilities[i];
+            list_of_candidates.push_back(*(new vector<UT_E>));
+            vector<UT_E> *candidates = &list_of_candidates[i];
+
+            // Check if the matrix has the item
+            if (matrices[i].count(*it) == 0) continue;
             for (int j = 0; j < utilities.size(); j++){
                 int col = utilities[j].index;
                 if (matrices[i][*it][col].self > 0){
                     UT_E e;
                     e.index = col; e.utility = utilities[j].utility + matrices[i][*it][col].self;
-                    candidates.push_back(e);
+                    candidates->push_back(e);
                 }
             }
-            list_of_candidates.push_back(candidates);
         }
         ilist[*it] = list_of_candidates;
     }
@@ -355,42 +437,25 @@ void candidate_generate(int last_item, vector<vector<UT_E> > list_of_utilities, 
         vector<vector<UT_E> > list_of_candidates = find_s_candidates(*it, list_of_utilities);
         for (int i = 0; i < matrices.size(); i++){
             vector<UT_E> utilities = list_of_utilities[i];
-            vector<UT_E> candidates = list_of_candidates[i];
+            vector<UT_E> *candidates = &list_of_candidates[i];
 
             // Fill the max ancestor utility
-            for (int j = 0; j < candidates.size(); j++){
+            for (int j = 0; j < candidates->size(); j++){
                 for (int k = 0; k < utilities.size(); k++){
                     // S-Conat item must locate after pattern
-                    if (!(utilities[k].index < candidates[j].index)) break;
-                    if (utilities[k].utility > candidates[j].utility) candidates[j].utility = utilities[k].utility;
+                    if (!(utilities[k].index < (*candidates)[j].index)) break;
+                    if (utilities[k].utility > (*candidates)[j].utility) (*candidates)[j].utility = utilities[k].utility;
                 }
             }
 
             // Add the self utility
-            for (int j = 0; j < candidates.size(); j++){
-                int col = utilities[j].index;
-                candidates[j].utility += matrices[i][*it][col].self;
+            for (int j = 0; j < candidates->size(); j++){
+                int col = (*candidates)[j].index;
+                (*candidates)[j].utility += matrices[i][*it][col].self;
             }
         }
         slist[*it] = list_of_candidates;
     }
-}
-
-void USpan(vector<vector<int> > pattern, vector<vector<UT_E> > list_of_utilities) {
-    vector<vector<int> > items_positions = find_matched_indexes(pattern);
-    
-    // If not pass the depth pruning then return(arrive the leaf node)
-    if (depth_pruning(pattern, utilities, items_positions) != true) return;
-
-    map<int, vector<vector<UT_E> > > ilist, slist;
-
-    candidate_generate(pattern, ilist, slist, items_positions);
-    width_pruning(pattern, ilist, slist, items_positions);
-    
-    // I-Concatenation
-    ConcatenationFunc(pattern, ilist, ICONCAT);
-    // S-Concatenation
-    ConcatenationFunc(pattern, slist, SCONCAT);
 }
 
 void ConcatenationFunc(vector<vector<int> > pattern, map<int, vector<vector<UT_E> > > list, CONCATENATION method) {
@@ -440,4 +505,24 @@ void PrintPattern(vector<vector<int> > p) {
         cout << ")";
     }
     cout << endl;
+}
+
+void USpan(vector<vector<int> > pattern, vector<vector<UT_E> > list_of_utilities){
+    int last_itemset_i = pattern.size()-1;
+    int last_item_i = pattern[last_itemset_i].size()-1;
+    int last_item = pattern[last_itemset_i][last_item_i];
+
+    map<int, vector<vector<UT_E> > > ilist, slist;
+
+    // All the mathed info is in utilities
+    if (depth_pruning(last_item, list_of_utilities) != true) return;
+
+    candidate_generate(last_item, list_of_utilities, ilist, slist);
+
+    width_pruning(ilist, slist);
+
+    // I-Concatenation
+    ConcatenationFunc(pattern, ilist, ICONCAT);
+    // S-Concatenation
+    ConcatenationFunc(pattern, slist, SCONCAT);
 }
