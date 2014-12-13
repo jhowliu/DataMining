@@ -44,47 +44,47 @@ void test(){
     //    }
     //    printf("\n");
     //}
-    map<int, vector<vector<UT_E> > > ilist, slist;
-    vector<vector<UT_E> > list_of_utilities;
-    for (int i = 0; i < matrices.size(); i++){
-        vector<UT_E> utilities;
-        UT_E e;
-        if (i == 0){
-            e.index = 2; e.utility = 10;
-            utilities.push_back(e);
-        }
-        else if (i == 1){
-            e.index = 1; e.utility = 5;
-            utilities.push_back(e);
-        }
-        else if (i == 2){
-        }
-        else if (i == 3){
-            e.index = 0; e.utility = 10;
-            utilities.push_back(e);
-            e.index = 2; e.utility = 5;
-            utilities.push_back(e);
-        }
-        else if (i == 4){
-            e.index = 0; e.utility = 10;
-            utilities.push_back(e);
-            e.index = 2; e.utility = 5;
-            utilities.push_back(e);
-        }
-        list_of_utilities.push_back(utilities);
-    }
+    //map<int, vector<vector<UT_E> > > ilist, slist;
+    //vector<vector<UT_E> > list_of_utilities;
+    //for (int i = 0; i < matrices.size(); i++){
+    //    vector<UT_E> utilities;
+    //    UT_E e;
+    //    if (i == 0){
+    //        e.index = 2; e.utility = 10;
+    //        utilities.push_back(e);
+    //    }
+    //    else if (i == 1){
+    //        e.index = 1; e.utility = 5;
+    //        utilities.push_back(e);
+    //    }
+    //    else if (i == 2){
+    //    }
+    //    else if (i == 3){
+    //        e.index = 0; e.utility = 10;
+    //        utilities.push_back(e);
+    //        e.index = 2; e.utility = 5;
+    //        utilities.push_back(e);
+    //    }
+    //    else if (i == 4){
+    //        e.index = 0; e.utility = 10;
+    //        utilities.push_back(e);
+    //        e.index = 2; e.utility = 5;
+    //        utilities.push_back(e);
+    //    }
+    //    list_of_utilities.push_back(utilities);
+    //}
 
-    candidate_generate(sequences[0][0], list_of_utilities, ilist, slist);
-    vector<int> keys = get_keys(ilist);
-    int key = keys[2];
-    printf("k %d\n", key);
-    for (int i = 0; i < matrices.size(); i++){
-        printf("%d =>>>>>>>>>>>>>>>>>>>>>>>>\n\n", i);
-        for (int j = 0; j < ilist[key][i].size(); j++){
-            printf("(%d, %d) ", ilist[key][i][j].index, ilist[key][i][j].utility);
-        }
-        printf("\n");
-    }
+    //candidate_generate(sequences[0][0], list_of_utilities, ilist, slist);
+    //vector<int> keys = get_keys(ilist);
+    //int key = keys[2];
+    //printf("k %d\n", key);
+    //for (int i = 0; i < matrices.size(); i++){
+    //    printf("%d =>>>>>>>>>>>>>>>>>>>>>>>>\n\n", i);
+    //    for (int j = 0; j < ilist[key][i].size(); j++){
+    //        printf("(%d, %d) ", ilist[key][i][j].index, ilist[key][i][j].utility);
+    //    }
+    //    printf("\n");
+    //}
 }
 
 void set_args(vector<map<int, vector<Entry> > > mx, vector<vector<int> > seq){
@@ -344,7 +344,7 @@ bool depth_pruning(int last_item, vector<vector<UT_E> > list_of_utilities){
         if (utilities.size() != 0){
             int col = utilities[0].index;
             // Rest utility + Current pattern utility
-            sigma = matrices[i][last_item][col].remain + utilities[0].utility;
+            sigma += matrices[i][last_item][col].remain + utilities[0].utility;
         }
     }
 
@@ -529,22 +529,29 @@ void USpan(vector<vector<int> > pattern, vector<vector<UT_E> > list_of_utilities
 
 void run(){
     set<int> item_set;
-    for (int i = 0; sequences.size(); i++){
+    for (int i = 0; i < sequences.size(); i++){
         for (int j = 0; j < sequences[i].size(); j++) item_set.insert(sequences[i][j]);
     }
 
     for (set<int>::iterator it = item_set.begin(); it != item_set.end(); ++it){
+        printf("%d\n", *it);
         vector<vector<int> > pattern;
         pattern.push_back(*(new vector<int>));
         pattern[0].push_back(*it);
 
+        vector<vector<int> > list_of_indexes = find_matched_indexes(pattern);
+
         vector<vector<UT_E> > list_of_utilities;
         for (int i = 0; i < matrices.size(); i++){
-            list_of_utilities.push_back(*(new vector<UT_E>));
-            vector<UT_E> *utilities = &list_of_utilities[i];
-            
+            vector<UT_E> utilities;
+            for (int j = 0; j < list_of_indexes[i].size(); j++){
+                int col = list_of_indexes[i][j];
+                UT_E e;
+                e.index = col; e.utility = matrices[i][*it][col].self;
+                utilities.push_back(e);
+            }
+            list_of_utilities.push_back(utilities);
         }
-
         USpan(pattern, list_of_utilities);
     }
 }

@@ -11,6 +11,7 @@ int main(int argc, char **argv){
     set_threshold(atoi(argv[2]));
     PrintMatrix(matrices, sequences);
 
-    test();
+    run();
+    //test();
     return 0;
 }
