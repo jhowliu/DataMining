@@ -14,33 +14,74 @@ vector<map<int, vector<Entry> > > matrices;
 vector<vector<int> > sequences;
 
 void test(){
-    int a;
-    vector<vector<int> > list_of_indexes;
-    vector<vector<int> > p;
-    vector<int> items1;
-    vector<int> items2;
-    vector<int> *items;
-    //p.push_back(items2);
-    //p.push_back(items1);
-    p.push_back(*(new vector<int>));
+    //int a;
+    //vector<vector<int> > list_of_indexes;
+    //vector<vector<int> > p;
+    //vector<int> items1;
+    //vector<int> items2;
+    //vector<int> *items;
+    ////p.push_back(items2);
+    ////p.push_back(items1);
+    //p.push_back(*(new vector<int>));
    
-    items = &p[0];
-    items->push_back(sequences[3][1]);
-    items->push_back(sequences[3][3]);
+    //items = &p[0];
+    //items->push_back(sequences[3][1]);
+    //items->push_back(sequences[3][3]);
 
-    for (int i = 0; i < p.size(); i++){
-        for (int j = 0; j < p[i].size(); j++){
-            printf("%d ", p[i][j]);
+    //for (int i = 0; i < p.size(); i++){
+    //    for (int j = 0; j < p[i].size(); j++){
+    //        printf("%d ", p[i][j]);
+    //    }
+    //    printf("\n");
+    //}
+    //exit(0);
+
+    //list_of_indexes = find_matched_indexes(p);
+    //for (int i = 0; i < list_of_indexes.size(); i++){
+    //    vector<int> indexes = list_of_indexes[i];
+    //    for (int j = 0; j < indexes.size(); j++){
+    //        printf("%d ", indexes[j]);
+    //    }
+    //    printf("\n");
+    //}
+    map<int, vector<vector<UT_E> > > ilist, slist;
+    vector<vector<UT_E> > list_of_utilities;
+    for (int i = 0; i < matrices.size(); i++){
+        vector<UT_E> utilities;
+        UT_E e;
+        if (i == 0){
+            e.index = 2; e.utility = 10;
+            utilities.push_back(e);
         }
-        printf("\n");
+        else if (i == 1){
+            e.index = 1; e.utility = 5;
+            utilities.push_back(e);
+        }
+        else if (i == 2){
+        }
+        else if (i == 3){
+            e.index = 0; e.utility = 10;
+            utilities.push_back(e);
+            e.index = 2; e.utility = 5;
+            utilities.push_back(e);
+        }
+        else if (i == 4){
+            e.index = 0; e.utility = 10;
+            utilities.push_back(e);
+            e.index = 2; e.utility = 5;
+            utilities.push_back(e);
+        }
+        list_of_utilities.push_back(utilities);
     }
-    exit(0);
 
-    list_of_indexes = find_matched_indexes(p);
-    for (int i = 0; i < list_of_indexes.size(); i++){
-        vector<int> indexes = list_of_indexes[i];
-        for (int j = 0; j < indexes.size(); j++){
-            printf("%d ", indexes[j]);
+    candidate_generate(sequences[0][0], list_of_utilities, ilist, slist);
+    vector<int> keys = get_keys(ilist);
+    int key = keys[2];
+    printf("k %d\n", key);
+    for (int i = 0; i < matrices.size(); i++){
+        printf("%d =>>>>>>>>>>>>>>>>>>>>>>>>\n\n", i);
+        for (int j = 0; j < ilist[key][i].size(); j++){
+            printf("(%d, %d) ", ilist[key][i][j].index, ilist[key][i][j].utility);
         }
         printf("\n");
     }
@@ -357,7 +398,9 @@ void candidate_generate(int last_item, vector<vector<UT_E> > list_of_utilities, 
         if (utilities.size() != 0){
             // Find I-Concat item
             int item_row = find_row_index(last_item, sequences[i]);
-            for (int j = item_row+1; j < sequences[i].size(); j++) iset.insert(sequences[i][j]);
+            if (item_row != -1){
+                for (int j = item_row+1; j < sequences[i].size(); j++) iset.insert(sequences[i][j]);
+            }
 
             // Find S-Concat item
             if (utilities[0].index < matrices[i].size()-1){
