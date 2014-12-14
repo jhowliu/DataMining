@@ -34,7 +34,7 @@ int main(int args, char **argv)
                 fscanf(sample, "%s ", p);    //item id
                 std::string str(p);
                 items.insert(str);
-                fprintf(quan_sample, "%s,%d ", p, rand() % 100 + 1);     //print item num and quan in out file
+                fprintf(quan_sample, "%s %d ", p, rand() % 100 + 1);     //print item num and quan in out file
             }
         }
 

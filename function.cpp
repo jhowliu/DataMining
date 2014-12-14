@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <cctype>
 #include <fstream>
 #include <iostream>
 
@@ -69,9 +70,11 @@ vector<map<int, vector<Entry> > > reader(char *fileName, vector<vector<int> > &s
         vector<int> p;
         char *token;
         token = strtok(tmp, ",");
-
         while (token!= NULL) {
-            p.push_back(token[0] - '0');
+            if (isdigit(token[0]))
+                p.push_back(atoi(token));
+            else
+                p.push_back((int)(token[0]-'0'));
             token = strtok(NULL, ",");
         }
 

@@ -1,8 +1,8 @@
 Run:	USpan.cpp function.cpp
-	make Convert && g++ USpan.cpp function.cpp && ./a.out data/utilityMatrix.txt 50
+	make Parse && g++ USpan.cpp function.cpp && ./a.out data/UtilityMatrix.txt 10000
 
 Clean:
 	rm ./a.out
 
-Convert: converter.cpp
-	g++ converter.cpp && ./a.out ./data/sample.txt
+Parse: Parser.py
+	python Parser.py ./data/sample.txt
