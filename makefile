@@ -1,8 +1,11 @@
 Run:	USpan.cpp function.cpp
-	make Convert && g++ USpan.cpp function.cpp && ./a.out data/utilityMatrix.txt 50
+	make Parse && g++ USpan.cpp function.cpp && ./a.out data/UtilityMatrix.txt 50
 
 Clean:
-	rm ./a.out
+	rm ./a.out ./data/quan_sample.txt ./data/UtilityMatrix.txt
 
 Convert: converter.cpp
-	g++ converter.cpp && ./a.out ./data/sample.txt
+	g++ converter.cpp && ./a.out ./data/sample.txt 10 10
+
+Parse: Parser.py
+	make Convert && python Parser.py ./data/quan_sample.txt

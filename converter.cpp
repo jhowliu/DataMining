@@ -7,14 +7,17 @@
 
 int main(int args, char **argv)
 {
-    if (args < 2) {
-        printf("Usage: ./a.out <fileName>");
+    if (args < 4) {
+        printf("Usage: ./a.out <fileName> <weightMax> <quantityMax>");
         exit(1);
     }
 
     FILE *sample, *quan_sample;
-    int l, m, r, q;
+    int l, m, r, q, quanMax, weightMax;
     char p[100];
+    
+    weightMax = atoi(argv[2]);
+    quanMax = atoi(argv[3]);
     std::set<std::string> items;
 
     sample=fopen(argv[1],"r");
@@ -34,7 +37,7 @@ int main(int args, char **argv)
                 fscanf(sample, "%s ", p);    //item id
                 std::string str(p);
                 items.insert(str);
-                fprintf(quan_sample, "%s,%d ", p, rand() % 100 + 1);     //print item num and quan in out file
+                fprintf(quan_sample, "%s %d ", p, rand() % quanMax + 1);     //print item num and quan in out file
             }
         }
 
@@ -43,7 +46,7 @@ int main(int args, char **argv)
     fprintf(quan_sample, "%s", "weight\n");    
     for (std::set<std::string>::iterator it = items.begin(); it != items.end(); it++) 
     {
-        fprintf(quan_sample, "%s %d ", it->c_str(), rand() % 100 + 1);
+        fprintf(quan_sample, "%s %d ", it->c_str(), rand() % weightMax + 1);
     }
     
     return 0;

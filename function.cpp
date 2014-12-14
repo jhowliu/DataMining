@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <cctype>
 #include <fstream>
 #include <iostream>
 
@@ -71,7 +72,7 @@ vector<map<int, vector<Entry> > > reader(char *fileName, vector<vector<int> > &s
         token = strtok(tmp, ",");
 
         while (token!= NULL) {
-            p.push_back(token[0] - '0');
+            p.push_back(atoi(token));
             token = strtok(NULL, ",");
         }
 
@@ -107,7 +108,7 @@ void PrintMatrix(vector<map<int, vector<Entry> > > matrix, vector<vector<int> > 
     {
         for (int j = 0; j != sequences[i].size(); j++) 
         {
-            cout << (char)('0' + sequences[i][j]) << " ";
+            cout << sequences[i][j] << " ";
             for (vector<Entry>::iterator iter = matrix[i][sequences[i][j]].begin(); iter != matrix[i][sequences[i][j]].end(); iter++) 
                 cout << "(" << iter->self << "," << iter->remain << ") ";
             cout << endl;
@@ -434,9 +435,11 @@ void PrintPattern(vector<vector<int> > p) {
         cout << "(";
         for (int j = 0; j != p[i].size(); j++) 
         {
-            sprintf(buf, "%c", p[i][j]+'0'); 
+            sprintf(buf, "%d", p[i][j]); 
             cout << buf;
             buf[0] = 0;
+            if (j != p[i].size()-1)
+                cout << " ";
         }
         cout << ")";
     }
