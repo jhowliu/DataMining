@@ -420,8 +420,8 @@ void ConcatenationFunc(vector<vector<int> > pattern, map<int, vector<vector<UT_E
             if (max != -1) maxUtilities += max;
         }
         if (maxUtilities > threshold) {
-            PrintPattern(newPattern);
-            cout << " " << maxUtilities << endl; 
+            //PrintPattern(newPattern);
+            //cout << " " << maxUtilities << endl; 
         }
              
         USpan(newPattern, list[it->first]);

@@ -14,7 +14,7 @@ int main(int args, char **argv){
 
     set_args(matrices, sequences);
     set_threshold(atoi(argv[2]));
-    PrintMatrix(matrices, sequences);
+    //PrintMatrix(matrices, sequences);
     
     printf("RESULT\n");
     run();
